@@ -17,4 +17,8 @@ Route::middleware('APIkey')->group( function () {
     Route::resource('contacts', 'API\ContactController');
 });
 
+Route::middleware('APIkey')->group( function () {
+    Route::resource('phone-numbers', 'API\PhoneNumberController');
+});
+
 Route::post('/contacts/{contact}/photo', 'API\ContactController@updateImage')->middleware('APIkey')->name('contacts.photo.update');

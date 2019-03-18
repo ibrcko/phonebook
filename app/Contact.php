@@ -7,8 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Contact extends Model
 {
     protected $fillable = [
-        'first_name', 'last_name', 'profile_photo', 'email', 'favourite'
+        'user_id', 'first_name', 'last_name', 'profile_photo', 'email', 'favourite'
     ];
 
-    //protected $table = 'contacts';
+    public function phoneNumbers()
+    {
+        return $this->hasMany(PhoneNumber::class, 'contact_id');
+    }
 }

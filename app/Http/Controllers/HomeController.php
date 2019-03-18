@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+
+use App\Http\ApiRequestDispatcher;
 
 class HomeController extends Controller
 {
+    protected $requestDispatcher;
     /**
      * Create a new controller instance.
      *
@@ -13,6 +15,8 @@ class HomeController extends Controller
      */
     public function __construct()
     {
+        $this->requestDispatcher = new ApiRequestDispatcher();
+
         $this->middleware('auth');
     }
 
@@ -23,6 +27,9 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $response = $this->requestDispatcher->dispatch('index');
+        dd($response);
+
         return view('home');
     }
 }
