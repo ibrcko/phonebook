@@ -7,12 +7,15 @@ use App\Http\Requests\ContactCreateRequest;
 use App\Http\Requests\ContactUpdateRequest;
 use App\Repository\ContactRepository;
 use App\Http\Controllers\API\BaseController as BaseController;
+use Illuminate\Http\Request;
 
 class ContactController extends BaseController
 {
     public function index(ContactRepository $repo)
     {
-        $contacts = $repo->getAll();
+        $userId = auth()->user()->getAuthIdentifier();
+
+        $contacts = $repo->getAll($userId);
 
         if ($contacts->isEmpty()) {
             return $this->sendError('No contacts found.');

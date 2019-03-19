@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Storage;
 
 class ContactRepository extends Repository
 {
-    public function getAll()
+    public function getAll($userId)
     {
-        $contacts = Contact::with('phoneNumbers')
+        $contacts = Contact::where('user_id', $userId)->with('phoneNumbers')
                 ->limit(20)
                 ->paginate(15);
 
@@ -28,7 +28,8 @@ class ContactRepository extends Repository
         $contact->email = $data['email'];
         $contact->favourite = $data['favourite'];
 
-        $user = User::find($data['user_id']);
+        $userId = auth()->user()->getAuthIdentifier();
+        $user = User::find($userId);
 
         $contact = $user->contacts()->save($contact);
 

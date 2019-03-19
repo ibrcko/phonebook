@@ -1,50 +1,63 @@
 <?php
+
 namespace App\Http;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 class ApiRequestDispatcher
 {
     protected $request;
 
-    public function __construct()
+    public function getRouteName($entity, $actionMethod)
     {
-        $this->request = new Request();
+        return $entity . '.' . $actionMethod;
+
     }
 
-    public function formUrl($type)
+    public function createRequest($routeName, $actionMethod, $extraParams, $formData)
     {
-        $url = '';
-        switch ($type) {
-            case 'index':
-                $url = route('contacts.' . $type);
+        $this->request = Request::create(route($routeName, $extraParams), $actionMethod);
 
-                break;
-        }
-        return $url;
+        $this->request->request->add($formData);
+
     }
-    public function getMethod($type)
+
+    public function dispatch($entity, $method, $extraParams = '', $formData = [])
+    {
+        $routeName = $this->getRouteName($entity, $method);
+        $actionMethod = $this->getMethod($method);
+
+        $this->createRequest($routeName, $actionMethod, $extraParams, $formData);
+
+        $this->setHeaders();
+        
+        $response = $this->parseJsonResponse($this->sendRequest());
+
+        return $response;
+    }
+
+    public function getMethod($actionMethod)
     {
         $method = '';
-        switch ($type) {
+        switch ($actionMethod) {
             case 'index':
                 $method = 'GET';
-
+                break;
+            case 'store':
+                $method = 'POST';
+                break;
+            case 'show':
+                $method = 'GET';
+                break;
+            case 'update':
+                $method = 'PUT';
+                break;
+            case 'destroy':
+                $method = 'DELETE';
                 break;
         }
         return $method;
-    }
-
-    public function dispatch($type)
-    {
-        $url = $this->formUrl($type);
-        $method = $this->getMethod($type);
-
-        $this->request = Request::create($url, $method);
-        $this->setHeaders();
-
-        return $this->sendRequest();
-
     }
 
     public function setHeaders()
@@ -52,6 +65,13 @@ class ApiRequestDispatcher
         $this->request->headers->set(config('auth.apiAccess.apiKey'), config('auth.apiAccess.apiSecret'));
 
         $this->request->headers->set('accept', 'application/json');
+    }
+
+    private function parseJsonResponse($response)
+    {
+        $response = json_decode($response->content(), true);
+
+        return $response;
     }
 
     private function sendRequest()

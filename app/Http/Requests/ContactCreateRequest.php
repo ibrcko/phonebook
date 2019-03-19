@@ -13,7 +13,6 @@ class ContactCreateRequest extends FormRequest
                 'email' => 'required|email|unique:contacts,email',
                 'profile_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'favourite' => 'boolean',
-
         ];
     }
 
