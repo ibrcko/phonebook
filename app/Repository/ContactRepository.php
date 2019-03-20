@@ -26,7 +26,9 @@ class ContactRepository extends Repository
         $contact->first_name = $data['first_name'];
         $contact->last_name = $data['last_name'];
         $contact->email = $data['email'];
-        $contact->favourite = $data['favourite'];
+        if (!empty($data['favourite'])) {
+            $contact->favourite = $data['favourite'];
+        }
 
         $userId = auth()->user()->getAuthIdentifier();
         $user = User::find($userId);
@@ -46,7 +48,18 @@ class ContactRepository extends Repository
 
     public function update($data, $contact)
     {
-        $contact->update($data);
+        $this->updateImage($data, $contact);
+
+        if (!empty($data['first_name']))
+            $contact->first_name = $data['first_name'];
+        if (!empty($data['last_name']))
+            $contact->last_name = $data['last_name'];
+        if (!empty($data['email']))
+            $contact->email = $data['email'];
+        if (!empty($data['favourite'])) {
+            $contact->favourite = $data['favourite'];
+        }
+
         $contact->save();
 
         return $contact;

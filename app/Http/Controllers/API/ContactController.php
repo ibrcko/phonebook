@@ -28,9 +28,7 @@ class ContactController extends BaseController
     {
         $input = $request->all();
 
-        $data = $request->validate($input);
-
-        $contact = $repo->create($data);
+        $contact = $repo->create($input);
 
         return $this->sendResponse($contact->toArray(), 'Contact created successfully.');
     }
@@ -39,9 +37,7 @@ class ContactController extends BaseController
     {
         $input = $request->all();
 
-        $data = $request->validate($input);
-
-        $contact = $repo->update($data, $contact);
+        $contact = $repo->update($input, $contact);
 
         return $this->sendResponse($contact->toArray(), 'Contact updated successfully.');
     }
@@ -68,9 +64,7 @@ class ContactController extends BaseController
     {
         $input = $request->all();
 
-        $data = $request->validate($input);
-
-        $repo->updateImage($data, $contact);
+        $repo->updateImage($input, $contact);
 
         return $this->sendResponse($contact->toArray(), 'Profile photo updated.');
     }

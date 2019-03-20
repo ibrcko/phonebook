@@ -2,7 +2,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Validator;
 
 class ContactUpdateRequest extends FormRequest
 {
@@ -15,18 +14,4 @@ class ContactUpdateRequest extends FormRequest
             'profile_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
-
-    public function validate($input)
-    {
-        $validator = Validator::make($input, $this->rules());
-
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error: ' . $validator->errors());
-        }
-
-        $data = $validator->getData();
-
-        return $data;
-    }
-
 }

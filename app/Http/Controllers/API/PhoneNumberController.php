@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-
-use App\Contact;
 use App\Http\Requests\PhoneNumberCreateRequest;
 use App\Http\Requests\PhoneNumberUpdateRequest;
 use App\PhoneNumber;
@@ -26,9 +24,7 @@ class PhoneNumberController extends BaseController
     {
         $input = $request->all();
 
-        $data = $request->validate($input);
-
-        $phoneNumber = $repo->create($data);
+        $phoneNumber = $repo->create($input);
 
         return $this->sendResponse($phoneNumber->toArray(), 'Phone number created successfully.');
     }

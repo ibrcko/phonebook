@@ -3,14 +3,10 @@
 namespace App\Http\Controllers;
 
 
-use App\Contact;
-use App\Http\ApiRequestDispatcher;
+use http\Env\Request;
 
 class HomeController extends Controller
 {
-    protected $requestDispatcher;
-
-    protected $entity;
     /**
      * Create a new controller instance.
      *
@@ -18,7 +14,8 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->requestDispatcher = new ApiRequestDispatcher();
+        parent::__construct();
+
         $this->entity = 'contacts';
 
         $this->middleware('auth');
@@ -31,24 +28,19 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $responseData = $this->requestDispatcher->dispatch($this->entity, 'index');
+        $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'index');
 
         $contacts = [];
 
-        if (empty($responseData['success'])) {
+        if (empty($responseData['contact_response']['success'])) {
             return view('home')->with('contacts', $contacts);
         }
 
-        $contacts = $responseData['data']['data'];
+        $contacts = $responseData['contact_response']['data']['data'];
 
         return view('home')->with('contacts', $contacts);
     }
 
-    public function contactCreateForm()
-    {
-        return view('form');
-
-    }
     public function editContact()
     {
 

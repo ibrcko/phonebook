@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header">create new</div>
+                    <div class="card-header">CREATE NEW</div>
 
                     <div class="card-body">
                         <a href="{{route('contact.create')}}">CREATE</a>
@@ -29,13 +29,23 @@
 
                     <div class="card-body">
                         @foreach($contacts as $contact)
-                            {{$contact['first_name']}}
-                            {{$contact['last_name']}}
-                            {{$contact['email']}}
-                            <img src="{{asset($contact['profile_photo'])}}" alt="img">
-                            {{$contact['favourite']}}
-                            <a href="{{route('contact.delete', $contact['id'])}}">DELETE</a>
-                            <br>
+                            <form action="{{route('contact.update', $contact['id'])}}" method="post">
+                                <input type="checkbox" name="favourite" value="{{$contact['favourite']}}" @if($contact['favourite']) checked @endif> Favourite <br>
+                            </form>
+                            <a href="{{route('contact.show', $contact['id'])}}">
+                                <div>
+                                    @if(!empty($contact['profile_photo']))
+                                        <img src="{{asset('storage/' . $contact['profile_photo'])}}" width="500px"><br>
+                                    @endif
+                                    Name: {{$contact['first_name']}} {{$contact['last_name']}}
+                                        <br>
+                                    Email: {{$contact['email']}}
+                                     <br>
+                                        <a href="{{route('contact.delete', $contact['id'])}}">DELETE</a>
+                                    <br>
+                                    <br>
+                                </div>
+                            </a>
                         @endforeach
 
                     </div>
