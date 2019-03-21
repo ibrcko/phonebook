@@ -4,7 +4,6 @@ namespace App\Repository;
 
 
 use App\Contact;
-use App\PhoneNumber;
 use App\User;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,8 +11,17 @@ class ContactRepository extends Repository
 {
     public function getAll($userId)
     {
-        $contacts = Contact::where('user_id', $userId)->with('phoneNumbers')
+        $contacts = Contact::where('user_id', $userId)
                 ->limit(20)
+                ->paginate(15);
+
+        return $contacts;
+    }
+
+    public function getAllFavourites($userId)
+    {
+        $contacts = Contact::where('user_id', $userId)
+                ->where('favourite', true)
                 ->paginate(15);
 
         return $contacts;

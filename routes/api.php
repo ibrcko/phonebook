@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('/contacts/favourite', 'API\ContactController@favourite')->middleware('APIkey')->name('contacts.favourite');
+Route::post('/contacts/{contact}/photo', 'API\ContactController@updateImage')->middleware('APIkey')->name('contacts.photo.update');
 
 Route::middleware('APIkey')->group( function () {
     Route::resource('contacts', 'API\ContactController');
@@ -21,4 +23,3 @@ Route::middleware('APIkey')->group( function () {
     Route::resource('phone-numbers', 'API\PhoneNumberController');
 });
 
-Route::post('/contacts/{contact}/photo', 'API\ContactController@updateImage')->middleware('APIkey')->name('contacts.photo.update');

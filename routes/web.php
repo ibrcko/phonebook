@@ -18,6 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/favourite', 'HomeController@favourite')->name('favourite');
 
 Route::group(['prefix'=>'contact','as'=>'contact.'], function () {
 

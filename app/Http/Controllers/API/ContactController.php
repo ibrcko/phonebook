@@ -11,11 +11,34 @@ use Illuminate\Http\Request;
 
 class ContactController extends BaseController
 {
-    public function index(ContactRepository $repo)
+    public function index(ContactRepository $repo, Request $request)
     {
-        $userId = auth()->user()->getAuthIdentifier();
+        $form = $request->all();
+        if (!array_key_exists('user_id', $form)) {
+            $userId = auth()->user()->getAuthIdentifier();
+        } else {
+            $userId = $form['user_id'];
+        }
 
         $contacts = $repo->getAll($userId);
+
+        if ($contacts->isEmpty()) {
+            return $this->sendError('No contacts found.');
+        }
+
+        return $this->sendResponse($contacts->toArray(), 'Contacts retrieved successfully.');
+    }
+
+    public function favourite(ContactRepository $repo, Request $request)
+    {
+        $form = $request->all();
+        if (!array_key_exists('user_id', $form)) {
+            $userId = auth()->user()->getAuthIdentifier();
+        } else {
+            $userId = $form['user_id'];
+        }
+
+        $contacts = $repo->getAllFavourites($userId);
 
         if ($contacts->isEmpty()) {
             return $this->sendError('No contacts found.');

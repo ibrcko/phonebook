@@ -71,7 +71,15 @@
                 </div>
             </div>
         </nav>
-
+        <br>
+        <center>
+        <div class="card-header">
+            <a href="{{route('home')}}"><span>All Contacts</span></a>
+            |
+            <a href="{{route('favourite')}}"><span>Favourite Contacts</span></a>
+        </div>
+        <br>
+        </center>
         <main class="py-4">
             @yield('content')
         </main>

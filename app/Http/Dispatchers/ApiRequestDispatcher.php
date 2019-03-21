@@ -34,6 +34,9 @@ class ApiRequestDispatcher
             case 'destroy':
                 $method = 'DELETE';
                 break;
+            case 'favourite':
+                $method = 'GET';
+                break;
         }
         return $method;
     }

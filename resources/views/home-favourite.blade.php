@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+
+    <form action="" class="row justify-content-center">
+        <input  type="text">
+    </form>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="card col-md-2 m-1">
-                <div class="card-body">
-                    <a href="{{route('contact.create')}}">CREATE NEW</a>
-                </div>
-            </div>
+
             @foreach($contacts as $contact)
                 <div class="card col-md-2 m-1">
                     <div class="card-body">
@@ -32,7 +32,7 @@
                         <a href="{{route('contact.show', $contact['id'])}}">
                             <div>
                                 @if(!empty($contact['profile_photo']))
-                                    <img src="{{asset('storage/' . $contact['profile_photo'])}}" width="500px"><br>
+                                    <img src="{{asset('storage/' . $contact['profile_photo'])}}" width="100px"><br>
                                 @endif
                                 Name: {{$contact['first_name']}} {{$contact['last_name']}}
                                 <br>

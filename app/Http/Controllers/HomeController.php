@@ -41,6 +41,21 @@ class HomeController extends Controller
         return view('home')->with('contacts', $contacts);
     }
 
+    public function favourite()
+    {
+        $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'favourite');
+
+        $contacts = [];
+
+        if (empty($responseData['contact_response']['success'])) {
+            return view('home-favourite')->with('contacts', $contacts);
+        }
+
+        $contacts = $responseData['contact_response']['data']['data'];
+
+        return view('home-favourite')->with('contacts', $contacts);
+    }
+
     public function editContact()
     {
 
