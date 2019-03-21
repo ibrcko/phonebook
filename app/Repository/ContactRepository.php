@@ -56,10 +56,9 @@ class ContactRepository extends Repository
             $contact->last_name = $data['last_name'];
         if (!empty($data['email']))
             $contact->email = $data['email'];
-        if (!empty($data['favourite'])) {
-            $contact->favourite = $data['favourite'];
-        }
 
+        $contact->favourite = $data['favourite'];
+        
         $contact->save();
 
         return $contact;

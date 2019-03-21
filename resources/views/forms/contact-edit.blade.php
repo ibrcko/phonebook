@@ -8,7 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-<a href="{{route('contact.show', $contact)}}"> BACK </a>
+<a href="{{route('contact.show', $contact['id'])}}"> BACK </a>
 <br>
 @if(isset($error))
 
@@ -27,7 +27,7 @@
     Profile photo: <input type="file" name="profile_photo"> <br><br>
     First Name <input type="text" name="first_name" value="{{$contact['first_name']}}"><br>
     Last Name <input type="text" name="last_name" value="{{$contact['last_name']}}"> <br>
-    Email <input type="text" name="email" value="{{$contact['email']}}"> <br>
+    Email <input type="text" name="email" value=""> <br>
     <br><br>
     <input type="submit">
 </form>

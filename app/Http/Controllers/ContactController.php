@@ -63,6 +63,8 @@ class ContactController extends Controller
 
         if (array_key_exists('errors', $responseData['contact_response'])) {
             return view('forms.contact-edit', $contact)->with('error', $responseData['contact_response']['errors'])->with('contact', $contact);
+        } else if ($request->header('referer') == route('home')) {
+            return redirect(route('home'));
         }
 
         return view('forms.contact-edit', $contact)->with('success', $responseData['contact_response']['success'])->with('contact', $contact);

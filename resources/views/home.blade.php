@@ -4,19 +4,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">Dashboard</div>
 
-                    <div class="card-body">
-                        @if (session('status'))
-                            <div class="alert alert-success" role="alert">
-                                {{ session('status') }}
-                            </div>
-                        @endif
-
-                        You are logged in!
-                    </div>
-                </div>
                 <div class="card">
                     <div class="card-header">CREATE NEW</div>
 
@@ -29,9 +17,23 @@
 
                     <div class="card-body">
                         @foreach($contacts as $contact)
+                            @php
+                                $favourite = $contact['favourite'] ? 0 : 1;
+                                if(!$favourite)
+                                    $buttonValue = 'Remove';
+                                else
+                                    $buttonValue = 'Add';
+                            @endphp
                             <form action="{{route('contact.update', $contact['id'])}}" method="post">
-                                <input type="checkbox" name="favourite" value="{{$contact['favourite']}}" @if($contact['favourite']) checked @endif> Favourite <br>
+                                <input type="text"
+                                       name="favourite"
+                                       value="{{$favourite}}"
+                                hidden>
+                                @csrf
+                                <input type="submit" value="{{$buttonValue}}">
+                                <br>
                             </form>
+
                             <a href="{{route('contact.show', $contact['id'])}}">
                                 <div>
                                     @if(!empty($contact['profile_photo']))
