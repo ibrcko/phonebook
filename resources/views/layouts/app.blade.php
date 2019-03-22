@@ -76,7 +76,7 @@
         <div class="card-header">
             <a href="{{route('home')}}"><span>All Contacts</span></a>
             |
-            <a href="{{route('favourite')}}"><span>Favourite Contacts</span></a>
+            <a href="{{route('contact.favourite.index')}}"><span>Favourite Contacts</span></a>
         </div>
         <br>
         </center>

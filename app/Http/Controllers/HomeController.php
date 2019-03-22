@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
-use http\Env\Request;
-
 class HomeController extends Controller
 {
     /**
@@ -21,11 +18,6 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
         $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'index');
@@ -43,7 +35,7 @@ class HomeController extends Controller
 
     public function favourite()
     {
-        $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'favourite');
+        $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'favourite.index');
 
         $contacts = [];
 
@@ -54,15 +46,5 @@ class HomeController extends Controller
         $contacts = $responseData['contact_response']['data']['data'];
 
         return view('home-favourite')->with('contacts', $contacts);
-    }
-
-    public function editContact()
-    {
-
-    }
-
-    public function favouriteContact()
-    {
-
     }
 }

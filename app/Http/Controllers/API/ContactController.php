@@ -47,6 +47,42 @@ class ContactController extends BaseController
         return $this->sendResponse($contacts->toArray(), 'Contacts retrieved successfully.');
     }
 
+    public function search(ContactRepository $repo, Request $request)
+    {
+        $form = $request->all();
+        if (!array_key_exists('user_id', $form)) {
+            $userId = auth()->user()->getAuthIdentifier();
+        } else {
+            $userId = $form['user_id'];
+        }
+
+        $contacts = $repo->search($form['query'], $userId);
+
+        if ($contacts->isEmpty()) {
+            return $this->sendError('No contacts found.');
+        }
+
+        return $this->sendResponse($contacts->toArray(), 'Contacts retrieved successfully.');
+    }
+
+    public function searchFavourite(ContactRepository $repo, Request $request)
+    {
+        $form = $request->all();
+        if (!array_key_exists('user_id', $form)) {
+            $userId = auth()->user()->getAuthIdentifier();
+        } else {
+            $userId = $form['user_id'];
+        }
+
+        $contacts = $repo->searchFavourites($form['query'], $userId);
+
+        if ($contacts->isEmpty()) {
+            return $this->sendError('No contacts found.');
+        }
+
+        return $this->sendResponse($contacts->toArray(), 'Contacts retrieved successfully.');
+    }
+
     public function store(ContactCreateRequest $request, ContactRepository $repo)
     {
         $input = $request->all();

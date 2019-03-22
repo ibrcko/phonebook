@@ -12,8 +12,7 @@ class ContactRepository extends Repository
     public function getAll($userId)
     {
         $contacts = Contact::where('user_id', $userId)
-                ->limit(20)
-                ->paginate(15);
+            ->paginate(15);
 
         return $contacts;
     }
@@ -21,8 +20,33 @@ class ContactRepository extends Repository
     public function getAllFavourites($userId)
     {
         $contacts = Contact::where('user_id', $userId)
-                ->where('favourite', true)
-                ->paginate(15);
+            ->where('favourite', true)
+            ->paginate(15);
+
+        return $contacts;
+    }
+
+    public function search($keyword, $userId)
+    {
+        $contacts = Contact::where('user_id', $userId)
+            ->where(function ($q) use ($keyword) {
+                $q->where('first_name', 'like', "%$keyword%")
+                    ->orWhere('last_name', 'like', "%$keyword%");
+            })
+            ->paginate(15);
+
+        return $contacts;
+    }
+
+    public function searchFavourites($keyword, $userId)
+    {
+        $contacts = Contact::where('user_id', $userId)
+            ->where('favourite', 1)
+            ->where(function ($q) use ($keyword) {
+                $q->where('first_name', 'like', "%$keyword%")
+                    ->orWhere('last_name', 'like', "%$keyword%");
+            })
+            ->paginate(15);
 
         return $contacts;
     }
@@ -54,6 +78,15 @@ class ContactRepository extends Repository
         return $contact;
     }
 
+    private function imageUpload($photo)
+    {
+        $name = time() . '.' . $photo->getClientOriginalExtension();
+
+        $path = $photo->storeAs('profile-photos', $name);
+
+        return $path;
+    }
+
     public function update($data, $contact)
     {
         $this->updateImage($data, $contact);
@@ -66,38 +99,10 @@ class ContactRepository extends Repository
             $contact->email = $data['email'];
 
         $contact->favourite = $data['favourite'];
-        
+
         $contact->save();
 
         return $contact;
-    }
-
-    public function find($id)
-    {
-        $contact = Contact::with('phoneNumbers')
-            ->find($id);
-
-        return $contact;
-    }
-
-    public function delete($contact)
-    {
-        if (!is_null($contact->profile_photo)) {
-            $this->deleteProfilePhoto($contact);
-        }
-
-        $contact->delete();
-
-        return $contact;
-    }
-
-    private function imageUpload($photo)
-    {
-        $name = time() . '.' . $photo->getClientOriginalExtension();
-
-        $path = $photo->storeAs('profile-photos', $name);
-
-        return $path;
     }
 
     public function updateImage($data, Contact $contact)
@@ -122,6 +127,25 @@ class ContactRepository extends Repository
         if (Storage::exists($path)) {
             Storage::delete($path);
         }
+    }
+
+    public function find($id)
+    {
+        $contact = Contact::with('phoneNumbers')
+            ->find($id);
+
+        return $contact;
+    }
+
+    public function delete($contact)
+    {
+        if (!is_null($contact->profile_photo)) {
+            $this->deleteProfilePhoto($contact);
+        }
+
+        $contact->delete();
+
+        return $contact;
     }
 
 }

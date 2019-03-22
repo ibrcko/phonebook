@@ -46,6 +46,19 @@ class ContactController extends Controller
         return view('show')->with('contact', $responseContact);
     }
 
+    private function prepareContactData($responseData)
+    {
+        if (array_key_exists('errors', $responseData['contact_response']) ||
+            (array_key_exists('success', $responseData['contact_response']) &&
+                !$responseData['contact_response']['success'])) {
+            return $responseContact = [];
+        } else {
+            $responseContact = $responseData['contact_response']['data'];
+        }
+
+        return $responseContact;
+    }
+
     public function editContact(Contact $contact)
     {
         $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'show', $contact);
@@ -70,14 +83,33 @@ class ContactController extends Controller
         return view('forms.contact-edit', $contact)->with('success', $responseData['contact_response']['success'])->with('contact', $contact);
     }
 
-    private function prepareContactData($responseData)
+    public function search(Request $request)
     {
-        if (!array_key_exists('success', $responseData['contact_response'])) {
-            return $responseContact = [];
+
+        $input = $request->all();
+
+        $searchResponse = $this->contactRequestDispatcher->dispatch($this->entity, 'search', $input);
+
+        $contacts = $this->prepareContactData($searchResponse);
+
+        if (!empty($contacts)) {
+            return view('home')->with('contacts', $contacts['data']);
         }
+        return view('home')->with('contacts', $contacts);
+    }
 
-        $responseContact = $responseData['contact_response']['data'];
+    public function searchFavourite(Request $request)
+    {
 
-        return $responseContact;
+        $input = $request->all();
+
+        $searchResponse = $this->contactRequestDispatcher->dispatch($this->entity, 'favourite.search', $input);
+
+        $contacts = $this->prepareContactData($searchResponse);
+
+        if (!empty($contacts)) {
+            return view('home-favourite')->with('contacts', $contacts['data']);
+        }
+        return view('home-favourite')->with('contacts', $contacts);
     }
 }

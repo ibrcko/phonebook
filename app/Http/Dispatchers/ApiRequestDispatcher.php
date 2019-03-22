@@ -17,26 +17,16 @@ class ApiRequestDispatcher
 
     public function getMethod($actionMethod)
     {
-        $method = '';
+        $method = 'GET';
         switch ($actionMethod) {
-            case 'index':
-                $method = 'GET';
-                break;
             case 'store':
                 $method = 'POST';
-                break;
-            case 'show':
-                $method = 'GET';
                 break;
             case 'update':
                 $method = 'PUT';
                 break;
             case 'destroy':
                 $method = 'DELETE';
-                break;
-            case 'favourite':
-                $method = 'GET';
-                break;
         }
         return $method;
     }

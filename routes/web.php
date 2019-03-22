@@ -18,7 +18,6 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/favourite', 'HomeController@favourite')->name('favourite');
 
 Route::group(['prefix'=>'contact','as'=>'contact.'], function () {
 
@@ -28,11 +27,17 @@ Route::group(['prefix'=>'contact','as'=>'contact.'], function () {
     Route::get('show/{contact}', 'ContactController@showContact')->name('show');
     Route::get('edit/{contact}', 'ContactController@editContact')->name('edit');
     Route::post('update/{contact}', 'ContactController@updateContact')->name('update');
+    Route::get('search', 'ContactController@search')->name('search');
 
     Route::group(['prefix'=>'phone-number','as'=>'phone-number.'], function () {
         Route::get('create/{contact}', 'PhoneNumberController@createPhoneNumber')->name('create');
         Route::post('store/{contact}', 'PhoneNumberController@storePhoneNumber')->name('store');
         Route::get('delete/{contact}', 'PhoneNumberController@deletePhoneNumber')->name('delete');
+    });
+
+    Route::group(['prefix'=>'favourite','as'=>'favourite.'], function () {
+        Route::get('/', 'HomeController@favourite')->name('index');
+        Route::get('/search', 'ContactController@searchFavourite')->name('search');
     });
 });
 

@@ -2,8 +2,10 @@
 
 @section('content')
 
-    <form action="" class="row justify-content-center">
-        <input  type="text">
+    <form action="{{route('contact.favourite.search')}}" class="row justify-content-center" method="get">
+        @csrf
+        <input type="text" name="query" placeholder="Contacts first or last name">
+        <input type="submit" aria-hidden="true">
     </form>
     <div class="container">
         <div class="row justify-content-center">
