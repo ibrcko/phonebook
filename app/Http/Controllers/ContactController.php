@@ -23,18 +23,51 @@ class ContactController extends Controller
 
     public function storeContact(Request $request)
     {
+        $failedContact = false;
+        $messageContact = '';
+        $errorsContact = '';
+
+        $failedPhoneNumber = false;
+        $messagePhoneNumber = '';
+        $errorsPhoneNumber = '';
+
         $form = $request->all();
 
         $response = $this->contactRequestDispatcher->dispatch($this->entity, 'store', '', $form);
 
-        return $response;
-    }
+        if (array_key_exists('errors', $response['contact_response']) ||
+            (array_key_exists('success', $response['contact_response']) &&
+                !$response['contact_response']['success'])) {
+            $failedContact = true;
+            $messageContact = $response['contact_response']['message'];
+            $errorsContact = $response['contact_response']['errors'];
+        } else {
+            $responseContact = $response['contact_response']['data']['id'];
 
-    public function deleteContact(Contact $contact)
-    {
-        $this->contactRequestDispatcher->dispatch($this->entity, 'destroy', $contact);
+            $contact = Contact::find($responseContact);
+            $responseShow = $this->showContact($contact);
+        }
 
-        return redirect(route('home'));
+        if ($failedContact) {
+            return view('forms.contact')->with(['failed' => $failedContact, 'message' => $messageContact, 'errors' => $errorsContact]);
+        }
+
+        if (isset($response['phone_numbers_response'])) {
+            if (array_key_exists('errors', $response['phone_numbers_response']) ||
+                (array_key_exists('success', $response['phone_numbers_response']) &&
+                    !$response['phone_numbers_response']['success'])) {
+                $failedPhoneNumber = true;
+                $messagePhoneNumber = $response['phone_numbers_response']['message'];
+                $errorsPhoneNumber = $response['phone_numbers_response']['errors'];
+            }
+        }
+
+        if ($failedPhoneNumber) {
+            return $responseShow->with(['failedPn' => $failedPhoneNumber, 'message' => $messagePhoneNumber, 'errors' => $errorsPhoneNumber, 'created' => true]);
+        }
+
+        return $responseShow->with('created', true);
+
     }
 
     public function showContact(Contact $contact)
@@ -43,7 +76,7 @@ class ContactController extends Controller
 
         $responseContact = $this->prepareContactData($responseData);
 
-        return view('show')->with('contact', $responseContact);
+        return view('show')->with('contact', $responseContact)->with('failed', false);
     }
 
     private function prepareContactData($responseData)
@@ -57,6 +90,21 @@ class ContactController extends Controller
         }
 
         return $responseContact;
+    }
+
+    public function deleteContact(Request $request, Contact $contact)
+    {
+        $message = 'Contact deleted successfully!';
+        $referer = $request->header('referer');
+
+        $response = $this->contactRequestDispatcher->dispatch($this->entity, 'destroy', $contact);
+
+        if (!$response['contact_response']['success']) {
+            $message = 'Contact wasn\'t deleted due to an error';
+            return redirect($referer)->with('message', $message)->with('deletion', true);
+        }
+
+        return redirect('home')->with(['deletion' => true, 'message' => $message]);
     }
 
     public function editContact(Contact $contact)
@@ -74,10 +122,12 @@ class ContactController extends Controller
 
         $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'update', $contact->id, $form);
 
+        $referer = $request->header('referer');
+
         if (array_key_exists('errors', $responseData['contact_response'])) {
             return view('forms.contact-edit', $contact)->with('error', $responseData['contact_response']['errors'])->with('contact', $contact);
-        } else if ($request->header('referer') == route('home')) {
-            return redirect(route('home'));
+        } else if (strpos($referer, 'home') || strpos($referer, 'favourite') || strpos($referer, 'search')) {
+            return redirect($referer);
         }
 
         return view('forms.contact-edit', $contact)->with('success', $responseData['contact_response']['success'])->with('contact', $contact);

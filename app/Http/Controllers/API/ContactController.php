@@ -50,13 +50,22 @@ class ContactController extends BaseController
     public function search(ContactRepository $repo, Request $request)
     {
         $form = $request->all();
-        if (!array_key_exists('user_id', $form)) {
-            $userId = auth()->user()->getAuthIdentifier();
-        } else {
-            $userId = $form['user_id'];
-        }
 
-        $contacts = $repo->search($form['query'], $userId);
+        if (!array_key_exists('query', $form)) {
+
+            $contactsResponse = $this->index($repo, $request);
+
+            return $contactsResponse;
+
+        } else {
+            if (!array_key_exists('user_id', $form)) {
+                $userId = auth()->user()->getAuthIdentifier();
+            } else {
+                $userId = $form['user_id'];
+            }
+
+            $contacts = $repo->search($form['query'], $userId);
+        }
 
         if ($contacts->isEmpty()) {
             return $this->sendError('No contacts found.');
@@ -68,13 +77,25 @@ class ContactController extends BaseController
     public function searchFavourite(ContactRepository $repo, Request $request)
     {
         $form = $request->all();
-        if (!array_key_exists('user_id', $form)) {
-            $userId = auth()->user()->getAuthIdentifier();
-        } else {
-            $userId = $form['user_id'];
-        }
 
-        $contacts = $repo->searchFavourites($form['query'], $userId);
+        if (!array_key_exists('query', $form)) {
+
+            $contactsResponse = $this->favourite($repo, $request);
+
+            return $contactsResponse;
+
+        } else {
+
+            $keyword = $form['query'];
+            if (!array_key_exists('user_id', $form)) {
+                $userId = auth()->user()->getAuthIdentifier();
+            } else {
+                $userId = $form['user_id'];
+            }
+
+            $contacts = $repo->searchFavourites($keyword, $userId);
+
+        }
 
         if ($contacts->isEmpty()) {
             return $this->sendError('No contacts found.');

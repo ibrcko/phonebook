@@ -1,36 +1,51 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-<a href="{{route('contact.show', $contact['id'])}}"> BACK </a>
-<br>
-@if(isset($error))
+@extends('layouts.app')
 
-    Contact Update Failed!<br>
-@elseif(isset($success))
+@section('content')
+    <div class="container">
+        <a href="{{route('home')}}">HOME</a>
+        <br>
+        <hr>
+        @if(isset($error))
 
-    Contact Updated. <br>
+            Contact Update Failed!<br>
+        @elseif(isset($success))
 
-@endif
-<form action="{{route('contact.update', $contact['id'])}}" method="post" enctype="multipart/form-data">
-    @csrf
-    Edit Contact: <br><br>
-    @if(!empty($contact['profile_photo']))
-        <img src="{{asset('storage/' . $contact['profile_photo'])}}" width="500px"><br>
-    @endif
-    Profile photo: <input type="file" name="profile_photo"> <br><br>
-    First Name <input type="text" name="first_name" value="{{$contact['first_name']}}"><br>
-    Last Name <input type="text" name="last_name" value="{{$contact['last_name']}}"> <br>
-    Email <input type="text" name="email" value=""> <br>
-    <br><br>
-    <input type="submit">
-</form>
+            Contact Updated. <br>
 
-</body>
-</html>
+        @endif
+        <form action="{{route('contact.update', $contact['id'])}}" method="post" enctype="multipart/form-data">
+            @csrf
+            <h2>Edit Contact: </h2>
+            <br>
+
+            Profile photo:
+            <br>
+            @if(!empty($contact['profile_photo']))
+                <img src="{{asset('storage/' . $contact['profile_photo'])}}" width="500px" alt="">
+                <br>
+            @endif
+            <label>
+                Upload new image:
+                <br>
+                <input type="file" name="profile_photo">
+            </label>
+
+            <br>
+            <br>
+            <label>
+                <input type="text" name="first_name" value="{{$contact['first_name']}}">
+            </label> First Name
+            <br>
+            <label>
+                <input type="text" name="last_name" value="{{$contact['last_name']}}">
+            </label> Last Name
+            <br>
+            <label>
+                <input type="text" name="email" value="">
+            </label> Email (leave it empty, if you want it not to change)
+            <br>
+            <br>
+            <input type="submit">
+        </form>
+    </div>
+@endsection

@@ -40,7 +40,7 @@ class PhoneNumberController extends BaseController
         return $this->sendResponse($contact->toArray(), 'Phone number updated successfully.');
     }
 
-    public function show(ContactRepository $repo, $id)
+    public function show(PhoneNumberRepository $repo, $id)
     {
         $contact = $repo->find($id);
 

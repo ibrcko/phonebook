@@ -71,7 +71,6 @@
                 </div>
             </div>
         </nav>
-        <br>
         <center>
         <div class="card-header">
             <a href="{{route('home')}}"><span>All Contacts</span></a>
@@ -79,6 +78,11 @@
             <a href="{{route('contact.favourite.index')}}"><span>Favourite Contacts</span></a>
         </div>
         <br>
+        <div class="text-black-50">
+            @if(session()->get('deletion'))
+                {{session()->get('message')}}
+        </div>
+            @endif
         </center>
         <main class="py-4">
             @yield('content')

@@ -1,35 +1,91 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    <form action="{{route('contact.store')}}" method="post" enctype="multipart/form-data">
-        @csrf
-        Create a Contact: <br><br>
-        Profile photo: <input type="file" name="profile_photo"> <br><br>
-        <input type="text" name="first_name"> Name <br>
-        <input type="text" name="last_name"> Last Name <br>
-        <input type="text" name="email"> Email <br>
-        <input type="checkbox" name="favourite" value="1"> Favourite <br>
-        <br><br>
-        Add a phone number <br>
-        <input type="text" name="phone_numbers[0][number]"> Number <br>
-        <input type="text" name="phone_numbers[0][name]"> Name <br>
-        <input type="text" name="phone_numbers[0][label]"> Label <br>
-        <input hidden type="text" name="phone_numbers[0][contact_id]">
-        <br><br>
+@extends('layouts.app')
 
-        <input type="text" name="phone_numbers[1][number]"> Number <br>
-        <input type="text" name="phone_numbers[1][name]"> Name <br>
-        <input type="text" name="phone_numbers[1][label]"> Label <br>
-        <input hidden type="text" name="phone_numbers[1][contact_id]">
+@section('content')
 
-        <input type="submit">
-    </form>
-</body>
-</html>
+    <div class="container ">
+        <a class="btn btn-primary" href="{{route('home')}}">HOME</a>
+        <br>
+        <hr>
+        <h2>Create a Contact:</h2>
+        <br>
+        <div class="text-danger">
+            @if(isset($failed))
+                Contact creation failed: <br>
+                {{$message}}
+                @foreach($errors as $key => $error)
+                    @foreach($error as $err)
+                        {{$err}}
+                        <br>
+                        <br>
+                    @endforeach
+                @endforeach
+            @endif
+        </div>
+        <form class="justify-content-center" action="{{route('contact.store')}}" method="post"
+              enctype="multipart/form-data">
+            @csrf
+            Profile photo:
+            <br>
+            <input class="btn btn-outline-dark" type="file" name="profile_photo">
+            <br>
+            <br>
+            <label>
+                <input type="text" name="first_name">
+            </label> First Name
+            <br>
+            <label>
+                <input type="text" name="last_name">
+            </label> Last Name
+            <br>
+            <label>
+                <input type="text" name="email">
+            </label> Email
+            <br>
+            <label >
+                <input type="checkbox" name="favourite" value="1">Favourite
+            </label>
+            <br>
+            <br>
+            <br>
+            <strong>Add a phone number</strong>
+            <br>
+            <i>Optional</i>
+            <br>
+            <label>
+                <input type="text" name="phone_numbers[0][number]">
+            </label> Number
+            <br>
+            <label>
+                <input type="text" name="phone_numbers[0][name]">
+            </label> Name
+            <br>
+            <label>
+                <input type="text" name="phone_numbers[0][label]">
+            </label> Label
+            <br>
+            <label>
+                <input hidden type="text" name="phone_numbers[0][contact_id]">
+            </label>
+            <br>
+            <br>
+
+            <label>
+                <input type="text" name="phone_numbers[1][number]">
+            </label> Number
+            <br>
+            <label>
+                <input type="text" name="phone_numbers[1][name]">
+            </label> Name
+            <br>
+            <label>
+                <input type="text" name="phone_numbers[1][label]">
+            </label> Label
+            <br>
+            <label>
+                <input hidden type="text" name="phone_numbers[1][contact_id]">
+            </label>
+            <br>
+            <input class="btn btn-secondary" type="submit">
+        </form>
+    </div>
+@endsection

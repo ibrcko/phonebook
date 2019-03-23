@@ -28,12 +28,30 @@ class PhoneNumberController extends Controller
 
     public function storePhoneNumber(Contact $contact, Request $request)
     {
+        $failed = false;
+        $message = '';
+        $errors = [];
+
         $form = $request->all();
 
-        $phoneNumbers = $this->phoneNumberRequestDispatcher->parsePhoneNumbers($form, $contact);
-        $response = $this->contactRequestDispatcher->dispatchPhoneNumbers($phoneNumbers);
+        $responsePhoneNumber = $this->phoneNumberRequestDispatcher->parsePhoneNumbers($form, $contact);
 
-        return $response;
+        $response = $this->contactRequestDispatcher->dispatchPhoneNumbers($responsePhoneNumber);
+
+        if (array_key_exists('errors', $response) ||
+            (array_key_exists('success', $response) &&
+                !$response['success'])) {
+            $failed = true;
+            $message = $response['message'];
+            $errors = $response['errors'];
+        }
+        if ($failed) {
+            return view('forms.phone-number')->with(['contact' => $contact,     'failed' => $failed, 'message' => $message, 'errors' => $errors]);
+        }
+        $contactArray = $contact->toArray();
+        $contactArray['phone_numbers'][] = $response['data'];
+
+        return view('show')->with('contact', $contactArray)->with(['failed' => $failed, 'message' => $message, 'errors' => $errors, 'createdPN' => true]);
     }
 
     public function deletePhoneNumber(Contact $contact)

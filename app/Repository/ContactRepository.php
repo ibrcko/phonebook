@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-
 use App\Contact;
 use App\User;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +11,7 @@ class ContactRepository extends Repository
     public function getAll($userId)
     {
         $contacts = Contact::where('user_id', $userId)
-            ->paginate(15);
+            ->paginate(14);
 
         return $contacts;
     }
@@ -21,7 +20,7 @@ class ContactRepository extends Repository
     {
         $contacts = Contact::where('user_id', $userId)
             ->where('favourite', true)
-            ->paginate(15);
+            ->paginate(14);
 
         return $contacts;
     }
@@ -33,7 +32,7 @@ class ContactRepository extends Repository
                 $q->where('first_name', 'like', "%$keyword%")
                     ->orWhere('last_name', 'like', "%$keyword%");
             })
-            ->paginate(15);
+            ->paginate(14);
 
         return $contacts;
     }
@@ -46,7 +45,7 @@ class ContactRepository extends Repository
                 $q->where('first_name', 'like', "%$keyword%")
                     ->orWhere('last_name', 'like', "%$keyword%");
             })
-            ->paginate(15);
+            ->paginate(14);
 
         return $contacts;
     }

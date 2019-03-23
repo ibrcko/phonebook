@@ -5,25 +5,28 @@
         <form action="{{route('contact.search')}}" class="row justify-content-center" method="get">
             @csrf
             <input type="text" name="query" placeholder="Contacts first or last name">
-            <input type="submit" aria-hidden="true">
+            <input class="btn btn-secondary m-1" type="submit" aria-hidden="true" value="Search">
         </form>
         <div class="row justify-content-center">
-
-            <div class="card col-md-2 m-1">
+            <div class="card col-md-2 m-3">
                 <div class="card-body">
-                    <a href="{{route('contact.create')}}">CREATE NEW</a>
+                    <a class="btn btn-success" href="{{route('contact.create')}}">CREATE NEW</a>
                 </div>
             </div>
             @foreach($contacts as $contact)
-                <div class="card col-md-2 m-1">
+                <div class="card col-md-2 m-3 p-0">
                     <div class="card-body">
 
                         @php
                             $favourite = $contact['favourite'] ? 0 : 1;
-                            if(!$favourite)
-                                $buttonValue = 'Remove';
-                            else
-                                $buttonValue = 'Add';
+                            if (!$favourite) {
+                                $buttonValue = 'Remove <3';
+                                $buttonClass = 'btn btn-outline-danger';
+                                }
+                            else {
+                                $buttonValue = 'Add <3';
+                                $buttonClass = 'btn btn-outline-secondary';
+                            }
                         @endphp
                         <form action="{{route('contact.update', $contact['id'])}}" method="post">
                             <input type="text"
@@ -31,20 +34,23 @@
                                    value="{{$favourite}}"
                                    hidden>
                             @csrf
-                            <input type="submit" value="{{$buttonValue}}">
+                            <input class="{{$buttonClass}}" type="submit" value="{{$buttonValue}}">
+                            <br>
                             <br>
                         </form>
 
                         <a href="{{route('contact.show', $contact['id'])}}">
                             <div>
                                 @if(!empty($contact['profile_photo']))
-                                    <img src="{{asset('storage/' . $contact['profile_photo'])}}" width="100px"><br>
+                                    <img src="{{asset('storage/' . $contact['profile_photo'])}}" width="100px">
+                                    <br>
+                                    <br>
                                 @endif
-                                Name: {{$contact['first_name']}} {{$contact['last_name']}}
+                                <span>{{$contact['first_name']}} {{$contact['last_name']}}</span>
                                 <br>
-                                Email: {{$contact['email']}}
                                 <br>
-                                <a href="{{route('contact.delete', $contact['id'])}}">DELETE</a>
+                                <br>
+                                <a class="btn btn-outline-primary" href="{{route('contact.delete', $contact['id'])}}">DELETE</a>
                                 <br>
                                 <br>
                             </div>
