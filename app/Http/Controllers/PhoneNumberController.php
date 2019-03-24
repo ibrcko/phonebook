@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contact;
+use App\PhoneNumber;
 use Illuminate\Http\Request;
 
 class PhoneNumberController extends Controller
@@ -32,6 +33,8 @@ class PhoneNumberController extends Controller
         $message = '';
         $errors = [];
 
+        $referer = $request->header('referer');
+
         $form = $request->all();
 
         $responsePhoneNumber = $this->phoneNumberRequestDispatcher->parsePhoneNumbers($form, $contact);
@@ -46,18 +49,18 @@ class PhoneNumberController extends Controller
             $errors = $response['errors'];
         }
         if ($failed) {
-            return view('forms.phone-number')->with(['contact' => $contact,     'failed' => $failed, 'message' => $message, 'errors' => $errors]);
+            return redirect($referer)->with(['failed' => $failed, 'message' => $message, 'errors' => $errors]);
         }
-        $contactArray = $contact->toArray();
-        $contactArray['phone_numbers'][] = $response['data'];
 
-        return view('show')->with('contact', $contactArray)->with(['failed' => $failed, 'message' => $message, 'errors' => $errors, 'createdPN' => true]);
+        return redirect($referer)->with(['failed' => $failed, 'message' => $message, 'errors' => $errors, 'createdPN' => true]);
     }
 
-    public function deletePhoneNumber(Contact $contact)
+    public function deletePhoneNumber(Request $request, $phoneNumber)
     {
-        $this->phoneNumberRequestDispatcher->dispatch($this->entity, 'destroy', [], $contact);
+        $referer = $request->header('referer');
 
-        return redirect(route('home'));
+        $this->phoneNumberRequestDispatcher->dispatch($this->entity, 'destroy', $phoneNumber, []);
+
+        return redirect($referer)->with(['deletion' => true]);
     }
 }

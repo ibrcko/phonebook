@@ -10,7 +10,7 @@ class ContactCreateRequest extends FormRequest
         return [
                 'first_name' => 'required',
                 'last_name' => 'required',
-                'email' => 'required|email',/*|unique:contacts,email*/
+                'email' => 'required|email|unique:contacts,email',
                 'profile_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'favourite' => 'boolean',
         ];

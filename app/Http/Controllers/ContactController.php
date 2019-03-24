@@ -118,19 +118,22 @@ class ContactController extends Controller
 
     public function updateContact(Contact $contact, Request $request)
     {
+        $message = 'Contact updated successfully!';
         $form = $request->all();
+        $referer = $request->header('referer');
+
+        if (!isset($form['email'])) {
+            unset($form['email']);
+        }
 
         $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'update', $contact->id, $form);
 
-        $referer = $request->header('referer');
-
         if (array_key_exists('errors', $responseData['contact_response'])) {
-            return view('forms.contact-edit', $contact)->with('error', $responseData['contact_response']['errors'])->with('contact', $contact);
-        } else if (strpos($referer, 'home') || strpos($referer, 'favourite') || strpos($referer, 'search')) {
-            return redirect($referer);
+            $message = 'Contact update failed.';
+            return redirect($referer)->with(['error' => $responseData['contact_response']['errors'], 'message' => $message]);
         }
 
-        return view('forms.contact-edit', $contact)->with('success', $responseData['contact_response']['success'])->with('contact', $contact);
+        return redirect($referer)->with(['updated' => true, 'message' => $message]);
     }
 
     public function search(Request $request)

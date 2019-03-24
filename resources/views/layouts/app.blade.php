@@ -81,8 +81,9 @@
         <div class="text-black-50">
             @if(session()->get('deletion'))
                 {{session()->get('message')}}
-        </div>
             @endif
+        </div>
+
         </center>
         <main class="py-4">
             @yield('content')

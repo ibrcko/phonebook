@@ -8,19 +8,25 @@
             <br>
             <hr>
             <h2>Add a phone number:</h2>
-            <br>
             <div class="text-danger">
-                @if(isset($failed))
+                @if(session()->get('failed'))
                     Phone number creation failed: <br>
-                    {{$message}}
-                    @foreach($errors as $key => $error)
+                    {{session()->get('message')}}
+                    @foreach(session()->get('errors') as $key => $error)
                         @foreach($error as $err)
                             {{$err}}
                             <br>
                             <br>
                         @endforeach
                     @endforeach
+                @elseif(session()->get('createdPN'))
+                    <div class="text-success">
+                        Phone number created successfully!
+                    </div>
                 @endif
+                    <a href="{{route('contact.show', $contact)}}">Return to the Contact</a>
+                    <br>
+                    <br>
             </div>
             <label>
                 <input type="text" name="phone_numbers[0][number]">

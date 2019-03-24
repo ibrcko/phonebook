@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Http\Dispatchers;
 
+use Illuminate\Http\Request;
 class ApiRequestDispatcher
 {
     protected $request;
@@ -9,8 +9,6 @@ class ApiRequestDispatcher
     public function getRouteName($entity, $actionMethod)
     {
         $route = '';
-        if ($entity == 'phone_numbers')
-            $route = 'contact.';
 
         return $route . $entity . '.' . $actionMethod;
     }
@@ -68,5 +66,13 @@ class ApiRequestDispatcher
             }
         }
         return $phoneNumbers;
+    }
+
+    public function createRequest($routeName, $actionMethod, $extraParams, $formData)
+    {
+        $this->request = Request::create(route($routeName, $extraParams), $actionMethod);
+
+        $this->request->request->add($formData);
+
     }
 }

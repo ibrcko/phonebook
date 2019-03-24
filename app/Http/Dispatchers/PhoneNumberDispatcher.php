@@ -1,21 +1,10 @@
 <?php
-
 namespace App\Http\Dispatchers;
-
-
-use Illuminate\Http\Request;
 
 class PhoneNumberDispatcher extends ApiRequestDispatcher
 {
-    public function createRequest($routeName, $actionMethod, $extraParams, $formData)
-    {
-        $this->request = Request::create(route($routeName, $extraParams), $actionMethod);
 
-        $this->request->request->add($formData);
-
-    }
-
-    public function dispatch($entity, $method, $formData = [], $extraParams = '')
+    public function dispatch($entity, $method,  $extraParams = '', $formData = [])
     {
         $routeName = $this->getRouteName($entity, $method);
         $actionMethod = $this->getMethod($method);

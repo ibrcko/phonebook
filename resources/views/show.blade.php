@@ -53,13 +53,17 @@
                 <div class="text-success">
                     Phone number created successfully!
                 </div>
+            @elseif(session()->get('deletion'))
+                <div class="text-black-50">
+                    Phone number deleted successfully!
+                </div>
             @endif
         </div>
         @foreach($contact['phone_numbers'] as $number)
             NAME: {{$number['name']}}<br>
             NUMBER: {{$number['number']}}<br>
             LABEL: {{$number['label']}}<br>
-            <a href="{{route('contact.phone-number.delete', $number['id'])}}"> Delete </a><br>
+            <a href="{{route('contact.phone-number.delete', $number)}}"> Delete </a><br>
         @endforeach
         <br>
         <a class="btn btn-outline-primary" href="{{route('contact.phone-number.create', $contact['id'])}}"> Add </a>
