@@ -61,7 +61,12 @@ class ContactRepository extends Repository
             $contact->favourite = $data['favourite'];
         }
 
-        $userId = auth()->user()->getAuthIdentifier();
+        if (!array_key_exists('user_id', $data)) {
+            $userId = auth()->user()->getAuthIdentifier();
+        } else {
+            $userId = $data['user_id'];
+        }
+
         $user = User::find($userId);
 
         $contact = $user->contacts()->save($contact);
