@@ -33,22 +33,20 @@ class PhoneNumberController extends BaseController
     {
         $input = $request->all();
 
-        $data = $request->validate($input);
+        $phoneNumberResult = $repo->update($input, $phoneNumber);
 
-        $contact = $repo->update($data, $phoneNumber);
-
-        return $this->sendResponse($contact->toArray(), 'Phone number updated successfully.');
+        return $this->sendResponse($phoneNumberResult->toArray(), 'Phone number updated successfully.');
     }
 
     public function show(PhoneNumberRepository $repo, $id)
     {
-        $contact = $repo->find($id);
+        $phoneNumber = $repo->find($id);
 
-        if (is_null($contact)) {
-            return $this->sendError('Contact not found.');
+        if (is_null($phoneNumber)) {
+            return $this->sendError('Phone number not found.');
         }
 
-        return $this->sendResponse($contact->toArray(), 'Contact retrieved successfully.');
+        return $this->sendResponse($phoneNumber->toArray(), 'Phone number retrieved successfully.');
     }
 
     public function destroy(PhoneNumberRepository $repo, PhoneNumber $phoneNumber)

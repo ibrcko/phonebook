@@ -37,4 +37,11 @@ class PhoneNumberRepository extends Repository
         return $phoneNumber;
 
     }
+
+    public function find($id)
+    {
+        $phoneNumber = PhoneNumber::find($id);
+
+        return $phoneNumber;
+    }
 }

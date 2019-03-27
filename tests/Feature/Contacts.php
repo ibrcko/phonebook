@@ -1,8 +1,6 @@
 <?php
-
 namespace Tests\Feature;
 
-use App\Contact;
 use App\User;
 use Tests\TestCase;
 
@@ -10,57 +8,56 @@ class Contacts extends TestCase
 {
     public function testNotFoundContactsIndex()
     {
-        $user = factory(User::class, 1)->create();
+        $users = factory(User::class, 1)->create();
 
         $response = $this
-            ->json('GET', route('contacts.index'), ['user_id' => $user->first()->id], [
+            ->json('GET', route('contacts.index'), ['user_id' => $users->first()->id], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
 
+        $users->first()->delete();
+
         $response->assertStatus(404);
 
-        $user->first()->delete();
     }
 
     public function testFoundContactsIndex()
     {
-        $user = factory(User::class, 1)->create()
+        $users = factory(User::class, 1)->create()
             ->each(function ($u) {
                 $u->contacts()->save(factory('App\Contact')->make());
             });
 
         $response = $this
-            ->json('GET', route('contacts.index'), ['user_id' => $user->first()->id], [
+            ->json('GET', route('contacts.index'), ['user_id' => $users->first()->id], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
+
+        $users->first()->delete();
 
         $response->assertStatus(200);
-
-        $user->first()->contacts()->first()->delete();
-        $user->first()->delete();
-
     }
 
-public function testNotFoundContactsFavourite()
+    public function testNotFoundContactsFavourite()
     {
-        $user = factory(User::class, 1)->create();
+        $users = factory(User::class, 1)->create();
 
         $response = $this
-            ->json('GET', route('contacts.favourite.index'), ['user_id' => $user->first()->id], [
+            ->json('GET', route('contacts.favourite.index'), ['user_id' => $users->first()->id], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
 
-        $response->assertStatus(404);
+        $users->first()->delete();
 
-        $user->first()->delete();
+        $response->assertStatus(404);
     }
 
     public function testFoundContactsFavourite()
     {
-        $user = factory(User::class, 1)->create()
+        $users = factory(User::class, 1)->create()
             ->each(function ($u) {
                 $u->contacts()->save(factory('App\Contact')->make([
                     'favourite' => 1,
@@ -68,63 +65,60 @@ public function testNotFoundContactsFavourite()
             });
 
         $response = $this
-            ->json('GET', route('contacts.favourite.index'), ['user_id' => $user->first()->id], [
+            ->json('GET', route('contacts.favourite.index'), ['user_id' => $users->first()->id], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
 
+        $users->first()->delete();
+
         $response->assertStatus(200);
-
-        $user->first()->contacts()->first()->delete();
-        $user->first()->delete();
-
     }
 
     public function testFoundContactShow()
     {
-        $user = factory(User::class, 1)->create()
+        $users = factory(User::class, 1)->create()
             ->each(function ($u) {
                 $u->contacts()->save(factory('App\Contact')->make());
             });
 
         $response = $this
-            ->json('GET', route('contacts.show', $user->first()->contacts()->first()), ['user_id' => $user->first()->id], [
+            ->json('GET', route('contacts.show', $users->first()->contacts()->first()), ['user_id' => $users->first()->id], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
 
-        $response->assertStatus(200);
+        $users->first()->delete();
 
-        $user->first()->contacts()->first()->delete();
-        $user->first()->delete();
+        $response->assertStatus(200);
     }
 
     public function testNotFoundContactShow()
     {
-        $user = factory(User::class, 1)->create();
+        $users = factory(User::class, 1)->create();
 
         $contactID = 99999;
 
         $response = $this
-            ->json('GET', route('contacts.show', $contactID), ['user_id' => $user->first()->id], [
+            ->json('GET', route('contacts.show', $contactID), ['user_id' => $users->first()->id], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
 
-        $response->assertStatus(404);
+        $users->first()->delete();
 
-        $user->first()->delete();
+        $response->assertStatus(404);
     }
 
     public function testCreatedContactCreate()
     {
         $faker = \Faker\Factory::create();
 
-        $user = factory(User::class, 1)->create();
+        $users = factory(User::class, 1)->create();
 
         $response = $this
             ->json('POST', route('contacts.store'), [
-                'user_id' => $user->first()->id,
+                'user_id' => $users->first()->id,
                 'first_name' => $faker->firstName,
                 'last_name' => $faker->lastName,
                 'email' => $faker->unique()->safeEmail,
@@ -134,26 +128,25 @@ public function testNotFoundContactsFavourite()
                 'accept' => 'application/json',
             ]);
 
-        $response->assertStatus(200);
+        $users->first()->delete();
 
-        $user->first()->delete();
+        $response->assertStatus(200);
     }
 
     public function testNotCreatedContactCreate()
     {
         $faker = \Faker\Factory::create();
 
-        $user = factory(User::class, 1)->create();
+        $users = factory(User::class, 1)->create()
+            ->each(function ($u) {
+                $u->contacts()->save(factory('App\Contact')->make());
+            });
 
-        $contact = factory(Contact::class, 1)->create([
-            'user_id' => $user->first()->id,
-        ]);
-        $contactEmail = $contact->first()->email;
-
+        $contactEmail = $users->first()->contacts()->first()->email;
 
         $response = $this
             ->json('POST', route('contacts.store'), [
-                'user_id' => $user->first()->id,
+                'user_id' => $users->first()->id,
                 'first_name' => $faker->firstName,
                 'last_name' => $faker->lastName,
                 'email' => $contactEmail,
@@ -163,11 +156,223 @@ public function testNotFoundContactsFavourite()
                 'accept' => 'application/json',
             ]);
 
+        $users->first()->delete();
+
         $response->assertStatus(422);
-
-        if (isset($contact))
-            $contact->first()->delete();
-
-        $user->first()->delete();
     }
+
+    public function testNotUpdatedContactEdit()
+    {
+        $faker = \Faker\Factory::create();
+
+        $users = factory(User::class, 1)->create()
+            ->each(function ($u) {
+                $u->contacts()->save(factory('App\Contact')->make());
+            });
+
+        $contact = $users->first()->contacts()->first();
+        $contactEmail = $contact->email;
+
+        $response = $this
+            ->json('PUT', route('contacts.update', $contact), [
+                'user_id' => $users->first()->id,
+                'first_name' => $faker->firstName,
+                'last_name' => $faker->lastName,
+                'email' => $contactEmail,
+                'favourite' => rand(0, 1),
+            ], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(422);
+    }
+
+    public function testUpdatedContactEdit()
+    {
+        $faker = \Faker\Factory::create();
+
+        $users = factory(User::class, 1)->create()
+            ->each(function ($u) {
+                $u->contacts()->save(factory('App\Contact')->make());
+            });
+
+        $contact = $users->first()->contacts()->first();
+
+        $response = $this
+            ->json('PUT', route('contacts.update', $contact), [
+                'user_id' => $users->first()->id,
+                'first_name' => $faker->firstName,
+                'last_name' => $faker->lastName,
+                'email' => $faker->unique()->email,
+                'favourite' => rand(0, 1),
+            ], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(200);
+    }
+
+    public function testWrongMethodContactsUpdate()
+    {
+        $users = factory(User::class, 1)->create()
+            ->each(function ($u) {
+                $u->contacts()->save(factory('App\Contact')->make());
+            });
+
+        $contact = $users->first()->contacts()->first();
+
+        $response = $this
+            ->json('POST', route('contacts.update', $contact), [
+                'user_id' => $users->first()->id,
+            ], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(405);
+    }
+
+    public function testNotFoundContactsUpdate()
+    {
+        $users = factory(User::class, 1)->create();
+
+        $contactId = 99999;
+
+        $response = $this
+            ->json('PUT', route('contacts.update', $contactId), [
+                'user_id' => $users->first()->id,
+            ], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(404);
+    }
+
+    public function testNotDeletedContactDelete()
+    {
+        $users = factory(User::class, 1)->create();
+
+        $response = $this
+            ->json('DELETE', route('contacts.destroy', 99999), [
+                'user_id' => $users->first()->id,
+            ], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(404);
+    }
+
+    public function testDeletedContactDelete()
+    {
+        $users = factory(User::class, 1)->create()
+            ->each(function ($u) {
+                $u->contacts()->save(factory('App\Contact')->make());
+            });
+
+        $contact = $users->first()->contacts()->first();
+
+        $response = $this
+            ->json('DELETE', route('contacts.destroy', $contact), [
+                'user_id' => $users->first()->id,
+            ], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(200);
+    }
+
+    public function testFoundContactsSearchIndex()
+    {
+        $faker = \Faker\Factory::create();
+
+        $fakeFirstName = $faker->firstName;
+        $fakeLastName = $faker->lastName;
+
+        $users = factory(User::class, 1)->create()
+            ->each(function ($u) use ($fakeFirstName, $fakeLastName) {
+                $u->contacts()->save(factory('App\Contact')->make(
+                    [
+                        'first_name' => $fakeFirstName,
+                        'last_name' => $fakeLastName,
+                    ]
+                ));
+            });
+
+        $queries = [
+            $fakeFirstName,
+            $fakeLastName
+        ];
+
+        $key = array_rand($queries);
+
+        $response = $this
+            ->json('GET', route('contacts.search'), [
+                'user_id' => $users->first()->id,
+                'query' => $queries[$key],
+            ], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(200);
+    }
+
+    public function testFoundContactsSearchFavourites()
+    {
+        $faker = \Faker\Factory::create();
+
+        $fakeFirstName = $faker->firstName;
+        $fakeLastName = $faker->lastName;
+
+        $users = factory(User::class, 1)->create()
+            ->each(function ($u) use ($fakeFirstName, $fakeLastName) {
+                $u->contacts()->save(factory('App\Contact')->make(
+                    [
+                        'first_name' => $fakeFirstName,
+                        'last_name' => $fakeLastName,
+                        'favourite' => 1,
+                    ]
+                ));
+            });
+
+        $queries = [
+            $fakeFirstName,
+            $fakeLastName
+        ];
+
+        $key = array_rand($queries);
+
+        $response = $this
+            ->json('GET', route('contacts.favourite.search'), [
+                'user_id' => $users->first()->id,
+                'query' => $queries[$key],
+            ], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(200);
+    }
+
 }
