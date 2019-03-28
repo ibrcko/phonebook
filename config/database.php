@@ -85,6 +85,7 @@ return [
             'prefix_indexes' => true,
         ],
 
+        /* Add DB configuration for testing purposes */
         'testing' => [
             'driver' => 'mysql',
             'host' => env('DB__HOST', '127.0.0.1'),

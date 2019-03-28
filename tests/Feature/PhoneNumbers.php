@@ -5,8 +5,16 @@ namespace Tests\Feature;
 use App\User;
 use Tests\TestCase;
 
+/**
+ * Class PhoneNumbers
+ * @package Tests\Feature
+ * Class that contains tests for api/phone-numbers routes
+ */
 class PhoneNumbers extends TestCase
 {
+    /**
+     * Test for found PhoneNumber on show route
+     */
     public function testFoundPhoneNumberShow()
     {
         $users = factory(User::class, 1)->create()
@@ -30,6 +38,9 @@ class PhoneNumbers extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for not found PhoneNumber on show route
+     */
     public function testNotFoundPhoneNumberShow()
     {
         $phoneNumberId = 99999;
@@ -43,6 +54,9 @@ class PhoneNumbers extends TestCase
         $response->assertStatus(404);
     }
 
+    /**
+     * Test for created PhoneNumber on create route
+     */
     public function testCreatedPhoneNumberCreate()
     {
         $faker = \Faker\Factory::create();
@@ -70,6 +84,9 @@ class PhoneNumbers extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for not created PhoneNumber on create route because of incorrect data
+     */
     public function testNotCreatedPhoneNumberCreate()
     {
         $faker = \Faker\Factory::create();
@@ -101,6 +118,9 @@ class PhoneNumbers extends TestCase
         $response->assertStatus(422);
     }
 
+    /**
+     * Test for not deleted PhoneNumber on destroy route because of not found PhoneNumber
+     */
     public function testNotDeletedPhoneNumberDelete()
     {
         $phoneNumberID = 99999;
@@ -114,6 +134,9 @@ class PhoneNumbers extends TestCase
         $response->assertStatus(404);
     }
 
+    /**
+     * Test for not deleted PhoneNumber on destroy route
+     */
     public function testDeletedPhoneNumberDelete()
     {
         $users = factory(User::class, 1)->create()
@@ -137,6 +160,9 @@ class PhoneNumbers extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for not updated PhoneNumber on update route because of incorrect data
+     */
     public function testNotUpdatedPhoneNumberEdit()
     {
         $faker = \Faker\Factory::create();
@@ -167,6 +193,9 @@ class PhoneNumbers extends TestCase
         $response->assertStatus(422);
     }
 
+    /**
+     * Test for updated PhoneNumber on update route
+     */
     public function testUpdatedContactEdit()
     {
         $faker = \Faker\Factory::create();
@@ -196,6 +225,9 @@ class PhoneNumbers extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for not updated PhoneNumber on update route because of wrong method
+     */
     public function testWrongMethodContactsUpdate()
     {
         $users = factory(User::class, 1)->create()
@@ -219,6 +251,9 @@ class PhoneNumbers extends TestCase
         $response->assertStatus(405);
     }
 
+    /**
+     * Test for not updated PhoneNumber on update route because of not found PhoneNumber
+     */
     public function testNotFoundContactsUpdate()
     {
         $users = factory(User::class, 1)->create();

@@ -1,10 +1,22 @@
 <?php
+
 namespace App\Http\Dispatchers;
 
+/**
+ * Class PhoneNumberDispatcher
+ * @package App\Http\Dispatchers
+ */
 class PhoneNumberDispatcher extends ApiRequestDispatcher
 {
 
-    public function dispatch($entity, $method,  $extraParams = '', $formData = [])
+    /**
+     * @param $entity
+     * @param $method
+     * @param string $extraParams
+     * @param array $formData
+     * @return mixed
+     */
+    public function dispatch($entity, $method, $extraParams = '', $formData = [])
     {
         $routeName = $this->getRouteName($entity, $method);
         $actionMethod = $this->getMethod($method);

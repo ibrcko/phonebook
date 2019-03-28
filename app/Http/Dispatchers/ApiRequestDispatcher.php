@@ -1,11 +1,28 @@
 <?php
+
 namespace App\Http\Dispatchers;
 
 use Illuminate\Http\Request;
+
+/**
+ * Class ApiRequestDispatcher
+ * @package App\Http\Dispatchers
+ * Class for a dispatcher that prepares data for dispatching an internal request
+ * It also dispatches the request
+ */
 class ApiRequestDispatcher
 {
+    /**
+     * @var
+     */
     protected $request;
 
+    /**
+     * @param $entity
+     * @param $actionMethod
+     * @return string
+     * Method that concatenates entity name and action method to generate a route name
+     */
     public function getRouteName($entity, $actionMethod)
     {
         $route = '';
@@ -13,6 +30,11 @@ class ApiRequestDispatcher
         return $route . $entity . '.' . $actionMethod;
     }
 
+    /**
+     * @param $actionMethod
+     * @return string
+     * Method that depending on the action method returns HTTP method name
+     */
     public function getMethod($actionMethod)
     {
         $method = 'GET';
@@ -29,6 +51,9 @@ class ApiRequestDispatcher
         return $method;
     }
 
+    /**
+     * Method that adds headers to the HTTP request for authorization
+     */
     public function setHeaders()
     {
         $this->request->headers->set(config('auth.apiAccess.apiKey'), config('auth.apiAccess.apiSecret'));
@@ -36,6 +61,35 @@ class ApiRequestDispatcher
         $this->request->headers->set('accept', 'application/json');
     }
 
+    /**
+     * @param $routeName
+     * @param $actionMethod
+     * @param $extraParams
+     * @param $formData
+     * Method that creates request with given data
+     */
+    public function createRequest($routeName, $actionMethod, $extraParams, $formData)
+    {
+        $this->request = Request::create(route($routeName, $extraParams), $actionMethod);
+
+        $this->request->request->add($formData);
+
+    }
+
+    /**
+     * @return mixed
+     * Method that sends the request
+     */
+    public function sendRequest()
+    {
+        return $response = app()->handle($this->request);
+    }
+
+    /**
+     * @param $response
+     * @return mixed
+     * Method that decodes json response
+     */
     public function parseJsonResponse($response)
     {
         $response = json_decode($response->content(), true);
@@ -43,11 +97,12 @@ class ApiRequestDispatcher
         return $response;
     }
 
-    public function sendRequest()
-    {
-        return $response = app()->handle($this->request);
-    }
-
+    /**
+     * @param $formData
+     * @param $contactOrResponse
+     * @return array
+     * Method that parses and forms data from phone numbers response
+     */
     public function parsePhoneNumbers($formData, $contactOrResponse)
     {
         $phoneNumbersForm = $formData['phone_numbers'];
@@ -66,13 +121,5 @@ class ApiRequestDispatcher
             }
         }
         return $phoneNumbers;
-    }
-
-    public function createRequest($routeName, $actionMethod, $extraParams, $formData)
-    {
-        $this->request = Request::create(route($routeName, $extraParams), $actionMethod);
-
-        $this->request->request->add($formData);
-
     }
 }

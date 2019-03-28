@@ -19,7 +19,7 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::group(['prefix'=>'contact','as'=>'contact.'], function () {
+Route::group(['prefix' => 'contact', 'as' => 'contact.'], function () {
 
     Route::get('create', 'ContactController@createContact')->name('create');
     Route::post('store', 'ContactController@storeContact')->name('store');
@@ -29,13 +29,13 @@ Route::group(['prefix'=>'contact','as'=>'contact.'], function () {
     Route::post('update/{contact}', 'ContactController@updateContact')->name('update');
     Route::get('search', 'ContactController@search')->name('search');
 
-    Route::group(['prefix'=>'phone-number','as'=>'phone-number.'], function () {
+    Route::group(['prefix' => 'phone-number', 'as' => 'phone-number.'], function () {
         Route::get('create/{contact}', 'PhoneNumberController@createPhoneNumber')->name('create');
         Route::post('store/{contact}', 'PhoneNumberController@storePhoneNumber')->name('store');
         Route::get('delete/{contact}', 'PhoneNumberController@deletePhoneNumber')->name('delete');
     });
 
-    Route::group(['prefix'=>'favourite','as'=>'favourite.'], function () {
+    Route::group(['prefix' => 'favourite', 'as' => 'favourite.'], function () {
         Route::get('/', 'HomeController@favourite')->name('index');
         Route::get('/search', 'ContactController@searchFavourite')->name('search');
     });

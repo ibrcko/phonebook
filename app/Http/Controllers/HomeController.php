@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+/**
+ * Class HomeController
+ * @package App\Http\Controllers
+ */
 class HomeController extends Controller
 {
     /**
@@ -18,6 +22,9 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index()
     {
         $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'index');
@@ -33,6 +40,9 @@ class HomeController extends Controller
         return view('home')->with('contacts', $contacts);
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function favourite()
     {
         $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'favourite.index');

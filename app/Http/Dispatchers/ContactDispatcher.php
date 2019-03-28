@@ -2,10 +2,20 @@
 
 namespace App\Http\Dispatchers;
 
-use Illuminate\Http\Request;
-
+/**
+ * Class ContactDispatcher
+ * @package App\Http\Dispatchers
+ * Class that calls methods that prepare request data and send the request
+ */
 class ContactDispatcher extends ApiRequestDispatcher
 {
+    /**
+     * @param $entity
+     * @param $method
+     * @param string $extraParams
+     * @param array $formData
+     * @return array
+     */
     public function dispatch($entity, $method, $extraParams = '', $formData = [])
     {
         $returnResponse = [];
@@ -32,14 +42,10 @@ class ContactDispatcher extends ApiRequestDispatcher
         return $returnResponse;
     }
 
-    public function createRequest($routeName, $actionMethod, $extraParams, $formData)
-    {
-        $this->request = Request::create(route($routeName, $extraParams), $actionMethod);
-
-        $this->request->request->add($formData);
-
-    }
-
+    /**
+     * @param $phoneNumbers
+     * @return array|mixed
+     */
     public function dispatchPhoneNumbers($phoneNumbers)
     {
         $responsePhoneNumbers = [];

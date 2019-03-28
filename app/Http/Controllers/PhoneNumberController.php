@@ -6,6 +6,10 @@ use App\Contact;
 use App\PhoneNumber;
 use Illuminate\Http\Request;
 
+/**
+ * Class PhoneNumberController
+ * @package App\Http\Controllers
+ */
 class PhoneNumberController extends Controller
 {
     /**
@@ -22,11 +26,20 @@ class PhoneNumberController extends Controller
         $this->middleware('auth');
     }
 
+    /**
+     * @param Contact $contact
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function createPhoneNumber(Contact $contact)
     {
         return view('forms.phone-number')->with('contact', $contact);
     }
 
+    /**
+     * @param Contact $contact
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function storePhoneNumber(Contact $contact, Request $request)
     {
         $failed = false;
@@ -55,6 +68,11 @@ class PhoneNumberController extends Controller
         return redirect($referer)->with(['failed' => $failed, 'message' => $message, 'errors' => $errors, 'createdPN' => true]);
     }
 
+    /**
+     * @param Request $request
+     * @param $phoneNumber
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function deletePhoneNumber(Request $request, $phoneNumber)
     {
         $referer = $request->header('referer');

@@ -100,6 +100,9 @@ return [
         ],
     ],
 
+    /* Add configuration for API authentication
+    *  Values are fetched from .env file
+    */
     'apiAccess' => [
         'apiKey' => env('API_KEY'),
         'apiSecret' => env('API_SECRET'),

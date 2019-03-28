@@ -1,12 +1,21 @@
 <?php
-
 namespace App\Repository;
 
 use App\Contact;
 use App\PhoneNumber;
 
+/**
+ * Class PhoneNumberRepository
+ * @package App\Repository
+ * Class that provides access to the database table phone_numbers
+ */
 class PhoneNumberRepository extends Repository
 {
+    /**
+     * @param $data
+     * @return mixed
+     * Method that creates PhoneNumber record
+     */
     public function create($data)
     {
         $phoneNumber = new PhoneNumber();
@@ -22,6 +31,12 @@ class PhoneNumberRepository extends Repository
         return $number;
     }
 
+    /**
+     * @param $data
+     * @param $phoneNumber
+     * @return mixed
+     * Method that updates PhoneNumber record
+     */
     public function update($data, $phoneNumber)
     {
         $phoneNumber->update($data);
@@ -30,6 +45,11 @@ class PhoneNumberRepository extends Repository
         return $phoneNumber;
     }
 
+    /**
+     * @param $phoneNumber
+     * @return mixed
+     * Method that deletes PhoneNumber record
+     */
     public function delete($phoneNumber)
     {
         $phoneNumber->delete();
@@ -38,6 +58,11 @@ class PhoneNumberRepository extends Repository
 
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     * Method that reads a single PhoneNumber record
+     */
     public function find($id)
     {
         $phoneNumber = PhoneNumber::find($id);

@@ -4,8 +4,17 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class PhoneNumberUpdateRequest
+ * @package App\Http\Requests
+ * Class that runs validation for requests that are trying to update a PhoneNumber record
+ */
 class PhoneNumberUpdateRequest extends FormRequest
 {
+    /**
+     * @return array
+     * Rules for validation
+     */
     public function rules()
     {
         return [

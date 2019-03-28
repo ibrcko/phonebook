@@ -1,11 +1,20 @@
 <?php
+
 namespace Tests\Feature;
 
 use App\User;
 use Tests\TestCase;
 
+/**
+ * Class Contacts
+ * @package Tests\Feature
+ * Class that contains tests for api/contacts routes
+ */
 class Contacts extends TestCase
 {
+    /**
+     * Test for not found Contact on index route
+     */
     public function testNotFoundContactsIndex()
     {
         $users = factory(User::class, 1)->create();
@@ -22,6 +31,9 @@ class Contacts extends TestCase
 
     }
 
+    /**
+     * Test for Contact on index route
+     */
     public function testFoundContactsIndex()
     {
         $users = factory(User::class, 1)->create()
@@ -40,6 +52,9 @@ class Contacts extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for not found Contact on favourite route
+     */
     public function testNotFoundContactsFavourite()
     {
         $users = factory(User::class, 1)->create();
@@ -55,6 +70,9 @@ class Contacts extends TestCase
         $response->assertStatus(404);
     }
 
+    /**
+     * Test for found Contact on favourite route
+     */
     public function testFoundContactsFavourite()
     {
         $users = factory(User::class, 1)->create()
@@ -75,6 +93,9 @@ class Contacts extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for found Contact on show route
+     */
     public function testFoundContactShow()
     {
         $users = factory(User::class, 1)->create()
@@ -93,6 +114,9 @@ class Contacts extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for not found Contact on show route
+     */
     public function testNotFoundContactShow()
     {
         $users = factory(User::class, 1)->create();
@@ -110,6 +134,9 @@ class Contacts extends TestCase
         $response->assertStatus(404);
     }
 
+    /**
+     * Test for created Contact on store route
+     */
     public function testCreatedContactCreate()
     {
         $faker = \Faker\Factory::create();
@@ -133,6 +160,9 @@ class Contacts extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for not created Contact on store route because of incorrect data
+     */
     public function testNotCreatedContactCreate()
     {
         $faker = \Faker\Factory::create();
@@ -161,6 +191,9 @@ class Contacts extends TestCase
         $response->assertStatus(422);
     }
 
+    /**
+     * Test for not updated Contact on update route because of incorrect data
+     */
     public function testNotUpdatedContactEdit()
     {
         $faker = \Faker\Factory::create();
@@ -190,6 +223,9 @@ class Contacts extends TestCase
         $response->assertStatus(422);
     }
 
+    /**
+     * Test for updated Contact on store route
+     */
     public function testUpdatedContactEdit()
     {
         $faker = \Faker\Factory::create();
@@ -218,6 +254,9 @@ class Contacts extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for not updated Contact on store route because of wrong method
+     */
     public function testWrongMethodContactsUpdate()
     {
         $users = factory(User::class, 1)->create()
@@ -240,6 +279,9 @@ class Contacts extends TestCase
         $response->assertStatus(405);
     }
 
+    /**
+     * Test for not updated Contact on store route because of not found Contact
+     */
     public function testNotFoundContactsUpdate()
     {
         $users = factory(User::class, 1)->create();
@@ -259,6 +301,9 @@ class Contacts extends TestCase
         $response->assertStatus(404);
     }
 
+    /**
+     * Test for not deleted Contact on destroy route because of not found Contact
+     */
     public function testNotDeletedContactDelete()
     {
         $users = factory(User::class, 1)->create();
@@ -276,6 +321,9 @@ class Contacts extends TestCase
         $response->assertStatus(404);
     }
 
+    /**
+     * Test for deleted Contact on destroy route
+     */
     public function testDeletedContactDelete()
     {
         $users = factory(User::class, 1)->create()
@@ -298,6 +346,9 @@ class Contacts extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for found Contacts on index search route
+     */
     public function testFoundContactsSearchIndex()
     {
         $faker = \Faker\Factory::create();
@@ -336,6 +387,42 @@ class Contacts extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * Test for not found Contacts on index search route
+     */
+    public function testNotFoundContactsSearchIndex()
+    {
+        $faker = \Faker\Factory::create();
+
+        $fakeFirstName = $faker->firstName;
+        $fakeLastName = $faker->lastName;
+
+        $users = factory(User::class, 1)->create();
+
+        $queries = [
+            $fakeFirstName,
+            $fakeLastName,
+        ];
+
+        $key = array_rand($queries);
+
+        $response = $this
+            ->json('GET', route('contacts.search'), [
+                'user_id' => $users->first()->id,
+                'query' => $queries[$key],
+            ], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(404);
+    }
+
+    /**
+     * Test for found Contacts on favourite search route
+     */
     public function testFoundContactsSearchFavourites()
     {
         $faker = \Faker\Factory::create();
@@ -373,6 +460,39 @@ class Contacts extends TestCase
         $users->first()->delete();
 
         $response->assertStatus(200);
+    }
+
+    /**
+     * Test for not found Contacts on favourite search route
+     */
+    public function testNotFoundContactsSearchFavourites()
+    {
+        $faker = \Faker\Factory::create();
+
+        $fakeFirstName = $faker->firstName;
+        $fakeLastName = $faker->lastName;
+
+        $users = factory(User::class, 1)->create();
+
+        $queries = [
+            $fakeFirstName,
+            $fakeLastName,
+        ];
+
+        $key = array_rand($queries);
+
+        $response = $this
+            ->json('GET', route('contacts.search'), [
+                'user_id' => $users->first()->id,
+                'query' => $queries[$key],
+            ], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(404);
     }
 
 }

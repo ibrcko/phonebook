@@ -5,8 +5,15 @@ namespace App\Http\Controllers;
 use App\Contact;
 use Illuminate\Http\Request;
 
+/**
+ * Class ContactController
+ * @package App\Http\Controllers
+ */
 class ContactController extends Controller
 {
+    /**
+     * ContactController constructor.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -16,11 +23,18 @@ class ContactController extends Controller
         $this->middleware('auth');
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function createContact()
     {
         return view('forms.contact');
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function storeContact(Request $request)
     {
         $failedContact = false;
@@ -70,6 +84,10 @@ class ContactController extends Controller
 
     }
 
+    /**
+     * @param Contact $contact
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function showContact(Contact $contact)
     {
         $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'show', $contact);
@@ -79,6 +97,10 @@ class ContactController extends Controller
         return view('show')->with('contact', $responseContact)->with('failed', false);
     }
 
+    /**
+     * @param $responseData
+     * @return array
+     */
     private function prepareContactData($responseData)
     {
         if (array_key_exists('errors', $responseData['contact_response']) ||
@@ -92,6 +114,11 @@ class ContactController extends Controller
         return $responseContact;
     }
 
+    /**
+     * @param Request $request
+     * @param Contact $contact
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function deleteContact(Request $request, Contact $contact)
     {
         $message = 'Contact deleted successfully!';
@@ -107,6 +134,10 @@ class ContactController extends Controller
         return redirect('home')->with(['deletion' => true, 'message' => $message]);
     }
 
+    /**
+     * @param Contact $contact
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function editContact(Contact $contact)
     {
         $responseData = $this->contactRequestDispatcher->dispatch($this->entity, 'show', $contact);
@@ -116,6 +147,11 @@ class ContactController extends Controller
         return view('forms.contact-edit')->with('contact', $responseContact);
     }
 
+    /**
+     * @param Contact $contact
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function updateContact(Contact $contact, Request $request)
     {
         $message = 'Contact updated successfully!';
@@ -136,6 +172,10 @@ class ContactController extends Controller
         return redirect($referer)->with(['updated' => true, 'message' => $message]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function search(Request $request)
     {
 
@@ -151,6 +191,10 @@ class ContactController extends Controller
         return view('home')->with('contacts', $contacts);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function searchFavourite(Request $request)
     {
 
