@@ -12,6 +12,37 @@ use Tests\TestCase;
  */
 class PhoneNumbers extends TestCase
 {
+    public function testNotFoundPhoneNumbersIndex()
+    {
+        $response = $this
+            ->json('GET', route('phone-numbers.index'), [], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $response->assertStatus(404);
+    }
+
+    public function testFoundPhoneNumbersIndex()
+    {
+        $users = factory(User::class, 1)->create()
+            ->each(function ($u) {
+                $u->contacts()->save(factory('App\Contact')->make())
+                    ->each(function ($u) {
+                        $u->phoneNumbers()->save(factory('App\PhoneNumber')->make());
+                    });
+            });
+
+        $response = $this
+            ->json('GET', route('phone-numbers.index'), [], [
+                config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
+                'accept' => 'application/json',
+            ]);
+
+        $users->first()->delete();
+
+        $response->assertStatus(200);
+    }
     /**
      * Test for found PhoneNumber on show route
      */

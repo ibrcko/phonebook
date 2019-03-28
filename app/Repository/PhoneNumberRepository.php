@@ -12,6 +12,16 @@ use App\PhoneNumber;
 class PhoneNumberRepository extends Repository
 {
     /**
+     * @return PhoneNumber[]|\Illuminate\Database\Eloquent\Collection
+     * Method that retreives all PhoneNumber records;
+     */
+    public function getAll()
+    {
+        $contacts = PhoneNumber::all();
+
+        return $contacts;
+    }
+    /**
      * @param $data
      * @return mixed
      * Method that creates PhoneNumber record

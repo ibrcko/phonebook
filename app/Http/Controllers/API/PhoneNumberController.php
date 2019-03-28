@@ -17,14 +17,14 @@ class PhoneNumberController extends BaseController
     /**
      * @param PhoneNumberRepository $repo
      * @return \Illuminate\Http\JsonResponse
-     * Method that processes request for retrieving all PhoneNumber records for a given contact
+     * Method that processes request for retrieving all PhoneNumber records
      */
     public function index(PhoneNumberRepository $repo)
     {
         $phoneNumbers = $repo->getAll();
 
         if ($phoneNumbers->isEmpty()) {
-            return $this->sendError('No contacts found.');
+            return $this->sendError('No phone numbers found.');
         }
 
         return $this->sendResponse($phoneNumbers->toArray(), 'Contacts retrieved successfully.');
