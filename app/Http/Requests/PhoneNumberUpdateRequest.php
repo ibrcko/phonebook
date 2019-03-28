@@ -18,7 +18,7 @@ class PhoneNumberUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'number' => 'required_without_all:name,label|numeric|unique:numbers,number',
+            'number' => 'required_without_all:name,label|numeric|unique:phone_numbers,number',
             'name' => 'required_without_all:label,number',
             'label' => 'required_without_all:number,name',
         ];

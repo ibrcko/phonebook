@@ -20,7 +20,7 @@ class PhoneNumber extends Model
     /**
      * @var string
      */
-    protected $table = 'numbers';
+    protected $table = 'phone_numbers';
 
 
     /**

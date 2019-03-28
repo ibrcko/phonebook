@@ -18,7 +18,7 @@ class PhoneNumberCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'number' => 'required|numeric|unique:numbers,number',
+            'number' => 'required|numeric|unique:phone_numbers,number',
             'name' => 'required',
             'contact_id' => 'required|integer'
         ];
