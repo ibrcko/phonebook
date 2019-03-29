@@ -7,6 +7,7 @@ use App\Http\Requests\ContactCreateRequest;
 use App\Http\Requests\ContactUpdateRequest;
 use App\Repository\ContactRepository;
 use App\Http\Controllers\API\BaseController as BaseController;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -17,6 +18,28 @@ use Illuminate\Http\Request;
 class ContactController extends BaseController
 {
     /**
+     * @param $request
+     * @return JsonResponse|mixed
+     * Method that checks if user_id parameter is in request /api/contacts?user_id= or in request body
+     * If there is no user_id as parameter, the method checks if user is logged in on frontend
+     * Method returns either user_id or JsonResponse for unauthorized access
+     */
+    private function authenticateApiRequest($request)
+    {
+        $form = $request->all();
+        if (!array_key_exists('user_id', $form)) {
+            if(!is_null(auth()->user())) {
+                $userId = auth()->user()->getAuthIdentifier();
+            } else {
+                return $this->sendError('Unauthorized.', 'Unauthorized access.', 403);
+            }
+        } else {
+            $userId = $form['user_id'];
+        }
+
+        return $userId;
+    }
+    /**
      * @param ContactRepository $repo
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -26,6 +49,11 @@ class ContactController extends BaseController
     {
         $form = $request->all();
 
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         if (!array_key_exists('query', $form)) {
 
             $contactsResponse = $this->index($repo, $request);
@@ -33,13 +61,7 @@ class ContactController extends BaseController
             return $contactsResponse;
 
         } else {
-            if (!array_key_exists('user_id', $form)) {
-                $userId = auth()->user()->getAuthIdentifier();
-            } else {
-                $userId = $form['user_id'];
-            }
-
-            $contacts = $repo->search($form['query'], $userId);
+            $contacts = $repo->search($form['query'], $userAuthentication);
         }
 
         if ($contacts->isEmpty()) {
@@ -57,14 +79,12 @@ class ContactController extends BaseController
      */
     public function index(ContactRepository $repo, Request $request)
     {
-        $form = $request->all();
-        if (!array_key_exists('user_id', $form)) {
-            $userId = auth()->user()->getAuthIdentifier();
-        } else {
-            $userId = $form['user_id'];
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
         }
 
-        $contacts = $repo->getAll($userId);
+        $contacts = $repo->getAll($userAuthentication);
 
         if ($contacts->isEmpty()) {
             return $this->sendError('No contacts found.');
@@ -83,6 +103,11 @@ class ContactController extends BaseController
     {
         $form = $request->all();
 
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         if (!array_key_exists('query', $form)) {
 
             $contactsResponse = $this->favourite($repo, $request);
@@ -92,13 +117,8 @@ class ContactController extends BaseController
         } else {
 
             $keyword = $form['query'];
-            if (!array_key_exists('user_id', $form)) {
-                $userId = auth()->user()->getAuthIdentifier();
-            } else {
-                $userId = $form['user_id'];
-            }
 
-            $contacts = $repo->searchFavourites($keyword, $userId);
+            $contacts = $repo->searchFavourites($keyword, $userAuthentication);
 
         }
 
@@ -117,14 +137,12 @@ class ContactController extends BaseController
      */
     public function favourite(ContactRepository $repo, Request $request)
     {
-        $form = $request->all();
-        if (!array_key_exists('user_id', $form)) {
-            $userId = auth()->user()->getAuthIdentifier();
-        } else {
-            $userId = $form['user_id'];
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
         }
 
-        $contacts = $repo->getAllFavourites($userId);
+        $contacts = $repo->getAllFavourites($userAuthentication);
 
         if ($contacts->isEmpty()) {
             return $this->sendError('No contacts found.');
@@ -141,9 +159,14 @@ class ContactController extends BaseController
      */
     public function store(ContactCreateRequest $request, ContactRepository $repo)
     {
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         $input = $request->all();
 
-        $contact = $repo->create($input);
+        $contact = $repo->create($input, $userAuthentication);
 
         return $this->sendResponse($contact->toArray(), 'Contact created successfully.');
     }
@@ -157,6 +180,11 @@ class ContactController extends BaseController
      */
     public function update(ContactUpdateRequest $request, ContactRepository $repo, Contact $contact)
     {
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         $input = $request->all();
 
         $contact = $repo->update($input, $contact);
@@ -167,11 +195,17 @@ class ContactController extends BaseController
     /**
      * @param ContactRepository $repo
      * @param $id
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      * Method that processes request for retrieving s single Contact record
      */
-    public function show(ContactRepository $repo, $id)
+    public function show(ContactRepository $repo, $id, Request $request)
     {
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         $contact = $repo->find($id);
 
         if (is_null($contact)) {
@@ -184,11 +218,17 @@ class ContactController extends BaseController
     /**
      * @param ContactRepository $repo
      * @param Contact $contact
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      * Method that processes request for deleting a single Contact record
      */
-    public function destroy(ContactRepository $repo, Contact $contact)
+    public function destroy(ContactRepository $repo, Contact $contact, Request $request)
     {
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         $contact = $repo->delete($contact);
 
         return $this->sendResponse($contact->toArray(), 'Contact deleted successfully.');
@@ -203,6 +243,11 @@ class ContactController extends BaseController
      */
     public function updateImage(ContactUpdateRequest $request, ContactRepository $repo, Contact $contact)
     {
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         $input = $request->all();
 
         $repo->updateImage($input, $contact);

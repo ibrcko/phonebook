@@ -14,11 +14,15 @@ class PhoneNumbers extends TestCase
 {
     public function testNotFoundPhoneNumbersIndex()
     {
+        $users = factory(User::class, 1)->create();
+
         $response = $this
-            ->json('GET', route('phone-numbers.index'), [], [
+            ->json('GET', route('phone-numbers.index'), ['user_id' => $users->first()->id], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
+
+        $users->first()->delete();
 
         $response->assertStatus(404);
     }
@@ -34,7 +38,7 @@ class PhoneNumbers extends TestCase
             });
 
         $response = $this
-            ->json('GET', route('phone-numbers.index'), [], [
+            ->json('GET', route('phone-numbers.index'), ['user_id' => $users->first()->id], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
@@ -59,7 +63,7 @@ class PhoneNumbers extends TestCase
         $phoneNumberId = $users->first()->contacts()->first()->phoneNumbers()->first()->id;
 
         $response = $this
-            ->json('GET', route('phone-numbers.show', $phoneNumberId), [], [
+            ->json('GET', route('phone-numbers.show', $phoneNumberId), ['user_id' => $users->first()->id], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
@@ -76,11 +80,15 @@ class PhoneNumbers extends TestCase
     {
         $phoneNumberId = 99999;
 
+        $users = factory(User::class, 1)->create();
+
         $response = $this
-            ->json('GET', route('contacts.show', $phoneNumberId), [], [
+            ->json('GET', route('contacts.show', $phoneNumberId), ['user_id' => $users->first()->id], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
+
+        $users->first()->delete();
 
         $response->assertStatus(404);
     }
@@ -101,6 +109,7 @@ class PhoneNumbers extends TestCase
 
         $response = $this
             ->json('POST', route('phone-numbers.store'), [
+                'user_id' => $users->first()->id,
                 'contact_id' => $contactId,
                 'number' => $faker->unique()->numberBetween(10000, 1000000),
                 'name' => $faker->name,
@@ -135,6 +144,7 @@ class PhoneNumbers extends TestCase
 
         $response = $this
             ->json('POST', route('phone-numbers.store'), [
+                'user_id' => $users->first()->id,
                 'contact_id' => $contactId,
                 'number' => $phoneNumberNumber,
                 'name' => $faker->name,
@@ -156,8 +166,10 @@ class PhoneNumbers extends TestCase
     {
         $phoneNumberID = 99999;
 
+        $users = factory(User::class, 1)->create();
+
         $response = $this
-            ->json('DELETE', route('phone-numbers.destroy', $phoneNumberID), [], [
+            ->json('DELETE', route('phone-numbers.destroy', $phoneNumberID), ['user_id' => $users->first()->id,], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
@@ -181,7 +193,7 @@ class PhoneNumbers extends TestCase
         $phoneNumber = $users->first()->contacts()->first()->phoneNumbers()->first();
 
         $response = $this
-            ->json('DELETE', route('phone-numbers.destroy', $phoneNumber), [], [
+            ->json('DELETE', route('phone-numbers.destroy', $phoneNumber), ['user_id' => $users->first()->id,], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
@@ -211,6 +223,7 @@ class PhoneNumbers extends TestCase
 
         $response = $this
             ->json('PUT', route('phone-numbers.update', $phoneNumber), [
+                'user_id' => $users->first()->id,
                 'number' => $phoneNumberNumber,
                 'name' => $faker->name,
                 'label' => $faker->jobTitle,
@@ -243,6 +256,7 @@ class PhoneNumbers extends TestCase
 
         $response = $this
             ->json('PUT', route('phone-numbers.update', $phoneNumber), [
+                'user_id' => $users->first()->id,
                 'number' => $faker->unique()->numberBetween(10000, 1000000),
                 'name' => $faker->name,
                 'label' => $faker->jobTitle,
@@ -272,7 +286,7 @@ class PhoneNumbers extends TestCase
         $phoneNumber = $users->first()->contacts()->first()->phoneNumbers()->first();
 
         $response = $this
-            ->json('POST', route('phone-numbers.update', $phoneNumber), [], [
+            ->json('POST', route('phone-numbers.update', $phoneNumber), ['user_id' => $users->first()->id,], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);
@@ -292,7 +306,7 @@ class PhoneNumbers extends TestCase
         $phoneNumberId = 99999;
 
         $response = $this
-            ->json('PUT', route('phone-numbers.update', $phoneNumberId), [], [
+            ->json('PUT', route('phone-numbers.update', $phoneNumberId), ['user_id' => $users->first()->id,], [
                 config('auth.apiAccess.apiKey') => config('auth.apiAccess.apiSecret'),
                 'accept' => 'application/json',
             ]);

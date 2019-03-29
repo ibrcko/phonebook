@@ -80,11 +80,12 @@ class ContactRepository extends Repository
 
     /**
      * @param $data
+     * @param null $userAuthentication
      * @return Contact
      * Method that creates Contact record for a current user
      * Checks if profile_photo has been uploaded, and if so, dispatches it to the imageUpload method and saves the path value
      */
-    public function create($data)
+    public function create($data, $userAuthentication = null)
     {
         $contact = new Contact();
 
@@ -95,11 +96,7 @@ class ContactRepository extends Repository
             $contact->favourite = $data['favourite'];
         }
 
-        if (!array_key_exists('user_id', $data)) {
-            $userId = auth()->user()->getAuthIdentifier();
-        } else {
-            $userId = $data['user_id'];
-        }
+        $userId = $userAuthentication;
 
         $user = User::find($userId);
 

@@ -6,6 +6,8 @@ use App\Http\Requests\PhoneNumberCreateRequest;
 use App\Http\Requests\PhoneNumberUpdateRequest;
 use App\PhoneNumber;
 use App\Repository\PhoneNumberRepository;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Class PhoneNumberController
@@ -15,12 +17,41 @@ use App\Repository\PhoneNumberRepository;
 class PhoneNumberController extends BaseController
 {
     /**
+     * @param $request
+     * @return JsonResponse|mixed
+     * Method that checks if user_id parameter is in request /api/phone-numbers?user_id=
+     * If there is no user_id as parameter, the method checks if user is logged in on frontend
+     * Method returns either user_id or JsonResponse for unauthorized access
+     */
+    private function authenticateApiRequest($request)
+    {
+        $form = $request->all();
+        if (!array_key_exists('user_id', $form)) {
+            if(!is_null(auth()->user())) {
+                $userId = auth()->user()->getAuthIdentifier();
+            } else {
+                return $this->sendError('Unauthorized.', 'Unauthorized access.', 403);
+            }
+        } else {
+            $userId = $form['user_id'];
+        }
+
+        return $userId;
+    }
+
+    /**
      * @param PhoneNumberRepository $repo
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      * Method that processes request for retrieving all PhoneNumber records
      */
-    public function index(PhoneNumberRepository $repo)
+    public function index(PhoneNumberRepository $repo, Request $request)
     {
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         $phoneNumbers = $repo->getAll();
 
         if ($phoneNumbers->isEmpty()) {
@@ -38,6 +69,11 @@ class PhoneNumberController extends BaseController
      */
     public function store(PhoneNumberCreateRequest $request, PhoneNumberRepository $repo)
     {
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         $input = $request->all();
 
         $phoneNumber = $repo->create($input);
@@ -54,6 +90,11 @@ class PhoneNumberController extends BaseController
      */
     public function update(PhoneNumberUpdateRequest $request, PhoneNumberRepository $repo, PhoneNumber $phoneNumber)
     {
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         $input = $request->all();
 
         $phoneNumberResult = $repo->update($input, $phoneNumber);
@@ -67,8 +108,13 @@ class PhoneNumberController extends BaseController
      * @return \Illuminate\Http\JsonResponse
      * Method that processes request for retrieving s single PhoneNumber record
      */
-    public function show(PhoneNumberRepository $repo, $id)
+    public function show(PhoneNumberRepository $repo, $id, Request $request)
     {
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         $phoneNumber = $repo->find($id);
 
         if (is_null($phoneNumber)) {
@@ -84,8 +130,13 @@ class PhoneNumberController extends BaseController
      * @return \Illuminate\Http\JsonResponse
      * Method that processes request for deleting a single Contact record
      */
-    public function destroy(PhoneNumberRepository $repo, PhoneNumber $phoneNumber)
+    public function destroy(PhoneNumberRepository $repo, PhoneNumber $phoneNumber, Request $request)
     {
+        $userAuthentication = $this->authenticateApiRequest($request);
+        if (gettype($userAuthentication) == "object") {
+            return $userAuthentication;
+        }
+
         $contact = $repo->delete($phoneNumber);
 
         return $this->sendResponse($contact->toArray(), 'Phone number deleted successfully.');
